@@ -1,0 +1,27 @@
+rm -f Src/main.o
+make -C ./Libft/libft clean
+make[1]: Entering directory '/home/houssam/CommonCore/minishell/Libft/libft'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[1]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/libft'
+rm -f minishell
+make -C ./Libft/libft fclean
+make[1]: Entering directory '/home/houssam/CommonCore/minishell/Libft/libft'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[1]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/libft'
+make -C ./Libft/libft
+make[1]: Entering directory '/home/houssam/CommonCore/minishell/Libft/libft'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/printf'
+make[2]: Entering directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[2]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/GNL'
+make[1]: Leaving directory '/home/houssam/CommonCore/minishell/Libft/libft'
