@@ -1,5 +1,5 @@
 SRCS = \
-	main.c
+	Src/main.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -11,11 +11,12 @@ LIBFT = ${LIBFT_DIR}/libft.a
 
 CC = cc
 CFLAGS = -Wall -Werror -Wextra -g3
+READLINE_FLAGS = -lreadline -lncurses
 
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(READLINE_FLAGS) -o $(NAME)
 
 
 $(LIBFT):
