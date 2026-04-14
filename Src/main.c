@@ -48,8 +48,21 @@ void	what_is_it(char *str, t_token *cmd)
 		define_cmd(cmd, APPOUTREDIR, str);
 	else if ((str[0] >= 'a' && str[0] <= 'z') || str[0] == '-')
 		define_cmd(cmd, WORD, str);
+	// else if (str[0] == 34 | str[0] == 39);
+	// 	define_cmd
 	else
 		return /* (printf("Probleme with the characterer\n")) */; // gerer ce cas d'erreur 
+}
+char	*is_quote(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		i++;
+	}
+	
 }
 
 void	split_line(char *line, t_token *cmd)
