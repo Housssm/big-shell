@@ -10,6 +10,28 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include "../Libft/libft/libft.h"
+
+typedef enum e_type
+{
+	WORD,
+	PIPE,
+	INREDIR,
+	OUTREDIR,
+	HEREDOC,
+	APPOUTREDIR,
+	MAIN,
+	PROCESS,
+	CHILD,
+}	t_type;
+
+typedef struct s_token
+{
+	t_type	type;
+	char	*value;
+	struct s_token	*next;
+}	t_token;
+
 
 volatile sig_atomic_t   signal_received; // utilisation dune variable volatile car cest un e variable dont la valeur va etre modifier en dehors du programme --> ASSURE UNE PORTABILITE GENERALE
 
