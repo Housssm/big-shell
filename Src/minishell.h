@@ -23,6 +23,9 @@ typedef enum e_type
 	MAIN,
 	PROCESS,
 	CHILD,
+	WEAK, //dbl quote certain cas transofrme pas en literal
+	STRONG, //simple quote de facon rigide tranfoirme en litteral
+	NONE, //pas de quote
 }	t_type;
 
 typedef struct s_token

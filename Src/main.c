@@ -53,17 +53,7 @@ void	what_is_it(char *str, t_token *cmd)
 	else
 		return /* (printf("Probleme with the characterer\n")) */; // gerer ce cas d'erreur 
 }
-char	*is_quote(char *line)
-{
-	int	i;
 
-	i = 0;
-	while (line[i])
-	{
-		i++;
-	}
-	
-}
 
 void	split_line(char *line, t_token *cmd)
 {
@@ -78,11 +68,81 @@ void	split_line(char *line, t_token *cmd)
 		i++;
 		printf("[%d, %s]\n",cmd->type, cmd->value);
 	}
-
-
-	// tab_result = split(line);
-	// return (tab_result);
 }
+
+int	is_quote(char letter, int flag)
+{
+	if (letter == 34 || flag == 0 || flag == 34)
+	{
+		if (flag == 0)
+			flag = 34;
+		else
+			flag = 0;
+		return (flag);
+	}
+	if (letter == 39 || flag == 0 || flag == 0)
+	{
+		if (flag == 0)
+			flag = 39;
+		else
+			flag = 0;
+		return (flag);
+	}
+	return (0);
+}
+
+char	*ft_strcncpy(char *dest, char *src, int n)
+{
+	int	i;
+
+	i = 0;
+	while (i < n && src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+char	**split_line(char *line, t_token *cmd)
+{
+	char	**result_tab;
+	int		i;
+	int		j;
+	int		quote;
+
+	quote = 0;
+	j = 0;
+	i = 0;
+	while (line[i])
+	{
+		//ouvre guilemt fleag va jusququ prochain ferme le flkag et passe au prochain string 
+		if (is_quote(line[i], &quote))
+		{
+			while (is_quote(line[i], &quote) != quote)
+				i++;
+			if (line[i] == '\0')
+				break ;
+			if (os )
+			i++;
+		}
+	return (result_tab);
+	}
+}
+
+	while (str[i])
+	{
+		while (str[i] == c)
+			i++;
+		if (str[i] == '\0')
+			break ;
+		while (str[i] && str[i] != c)
+			i++;
+		count++;
+
+
+
 
 
 int	main(void)

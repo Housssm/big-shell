@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 11:40:04 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/14 23:25:05 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/15 19:39:10 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int	ft_countwords(char *str, char c)
 	}
 	return (count);
 }
+
 
 char	*ft_fill_tab(char *str, int length)
 {
