@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 19:02:55 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/02/23 09:15:57 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/16 19:00:33 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,6 @@ int	count_line(t_list **lst)
 	}
 	return (count);
 }
-
-// int	ft_strlen(char *str)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (str[i])
-// 		i++;
-// 	return (i);
-// }
 
 char	*is_new_line(char *s, int x)
 {

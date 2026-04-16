@@ -10,6 +10,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include <stdbool.h>
+
 #include "../Libft/libft/libft.h"
 
 typedef enum e_type
@@ -23,9 +25,9 @@ typedef enum e_type
 	MAIN,
 	PROCESS,
 	CHILD,
-	WEAK, //dbl quote certain cas transofrme pas en literal
-	STRONG, //simple quote de facon rigide tranfoirme en litteral
-	NONE, //pas de quote
+	WEAK_QUOTE, //dbl quote certain cas transofrme pas en literal
+	STRONG_QUOTE, //simple quote de facon rigide tranfoirme en litteral
+	NONE_QUOTE, //pas de quote
 }	t_type;
 
 typedef struct s_token
@@ -35,6 +37,11 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
+typedef	struct s_parse
+{
+	int	pos_first_quote;
+	int	pos_sec_quote;
+}	t_parse;
 
 volatile sig_atomic_t   signal_received; // utilisation dune variable volatile car cest un e variable dont la valeur va etre modifier en dehors du programme --> ASSURE UNE PORTABILITE GENERALE
 

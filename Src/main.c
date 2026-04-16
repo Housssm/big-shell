@@ -2,6 +2,14 @@
 
 volatile sig_atomic_t   signal_received = 0; // permet de sauvegarder le dernier message avant de quitter 
 
+/* 
+ Fonction qui creer un noeud qui correspond a un s_token et retourb int = taille du token 
+	-identifier  les tokens fixes
+	-enum WORD pour tout les autres avant de les traiter sur le parsing
+	-si une quote jouvre jusqua la prochaine quote 
+	-la  prochaine ligne de commande sarrete quand il y a  un isspace ou un charactere special : |, $ , ', ";
+ */
+
 
 //Fonction pour extraire la ligne de commande
 char	*get_line() 
@@ -34,14 +42,14 @@ void	define_cmd(t_token *cmd, t_type opcode, char *str)
 		cmd->next = NULL;
 }
 
-void	what_is_it(char *str, t_token *cmd)
+void	what_is_it(t_token *cmd, char *str)
 {
 	if	(str[0] == '|')
 		define_cmd(cmd, PIPE, str);
 	else if	(str[0] == '<' && !str[1])
 		define_cmd(cmd, INREDIR, str);
 	else if	(str[0] == '>' && !str[1])
-		define_cmd(cmd, HEREDOC, str);
+		define_cmd(cmd, OUTREDIR, str);
 	else if	(str[0] == '<' && str[1] == '<')
 		define_cmd(cmd, HEREDOC, str);
 	else if	(str[0] == '>' && str[1] == '>')
@@ -55,103 +63,124 @@ void	what_is_it(char *str, t_token *cmd)
 }
 
 
-void	split_line(char *line, t_token *cmd)
+int	add_node(t_token **prev_node, char *value)
 {
-	char	**tab;
-	int		i;
+	t_token	*new;
 
-	i = 0;
-	tab = ft_split(line, ' ');
-	while(tab[i])
+	if(*prev_node == NULL)
 	{
-		what_is_it(tab[i], cmd);
-		i++;
-		printf("[%d, %s]\n",cmd->type, cmd->value);
+		*prev_node = malloc(sizeof(t_token));
+		if (!(*prev_node))
+			return ( ft_printf("Error Malloc node lexer", 2), 1);
+		(*prev_node)->value = ft_strdup(value);
+		what_is_it((*prev_node), value);
+		(*prev_node)->next = NULL;
 	}
-}
-
-int	is_quote(char letter, int flag)
-{
-	if (letter == 34 || flag == 0 || flag == 34)
+	else
 	{
-		if (flag == 0)
-			flag = 34;
-		else
-			flag = 0;
-		return (flag);
-	}
-	if (letter == 39 || flag == 0 || flag == 0)
-	{
-		if (flag == 0)
-			flag = 39;
-		else
-			flag = 0;
-		return (flag);
+		new = malloc(sizeof(t_token));
+		if (!new)
+			return ( ft_printf("Error Malloc node lexer", 2), 1);
+		new->value = ft_strdup(value);
+		what_is_it(new, value);
+		new->next = NULL;
+		(*prev_node)->next = new;
 	}
 	return (0);
 }
 
-char	*ft_strcncpy(char *dest, char *src, int n)
+size_t	parse_line(t_token *cmd, char *line)
 {
-	int	i;
+	size_t	len;
+	size_t	i;
+	size_t	j;
+	char	*value;
 
 	i = 0;
-	while (i < n && src[i])
+	len = 0;
+	while(line[i])
 	{
-		dest[i] = src[i];
-		i++;
+		while ((line[i] && line[i] > 8 && line[i] < 14) ||(line[i] && line[i] == 32))
+			i++;
+		if (line[i])
+			break; //return error;
+		j = i;
+		while (line[i] && !((line[i] > 8 && line[i] < 14) || line[i] != 32))
+			i++;
+		value = malloc((i = j) + 1);
+		if (!value)
+			return (1);
+		ft_memcpy(value, &line[j], (i - j));
+		value[i - j] = '\0';
+		len = add_node(&cmd, value);
+		printf("[%d, %s]\n", cmd->type, cmd->value);
+		free (value);
 	}
-	dest[i] = '\0';
-	return (dest);
+	return (len);
 }
 
-char	**split_line(char *line, t_token *cmd)
+// size_t	parse_line(t_token *cmd, char *line)
+// {
+// 	size_t	len;
+// 	size_t	i;
+// 	size_t	j;
+// 	char	*value;
+// 	t_token	*cursor;
+
+// 	if (!cmd || !line)
+// 		return (1);
+// 	i = 0;
+// 	len = 0;
+// 	cursor = cmd;
+// 	while (cursor->next)
+// 		cursor = cursor->next;
+// 	while (line[i])
+// 	{
+// 		while (line[i] && ((line[i] >= 9 && line[i] <= 13) || line[i] == 32))
+// 			i++;
+// 		if (!line[i])
+// 			break ;
+// 		j = i;
+// 		while (line[i] && !((line[i] >= 9 && line[i] <= 13) || line[i] == 32))
+// 			i++;
+// 		value = malloc((i - j) + 1);
+// 		if (!value)
+// 			return (1);
+// 		ft_memcpy(value, &line[j], i - j);
+// 		value[i - j] = '\0';
+// 		len = add_node(&cursor, value);
+// 		free(value);
+// 		if (len != 0)
+// 			return (len);
+// 		if (cursor->next)
+// 			cursor = cursor->next;
+// 	}
+// 	return (0);
+// }
+
+
+
+void	lexer(t_token *cmd, char *line)
 {
-	char	**result_tab;
-	int		i;
-	int		j;
-	int		quote;
+	parse_line(cmd, line);
 
-	quote = 0;
-	j = 0;
-	i = 0;
-	while (line[i])
-	{
-		//ouvre guilemt fleag va jusququ prochain ferme le flkag et passe au prochain string 
-		if (is_quote(line[i], &quote))
-		{
-			while (is_quote(line[i], &quote) != quote)
-				i++;
-			if (line[i] == '\0')
-				break ;
-			if (os )
-			i++;
-		}
-	return (result_tab);
-	}
 }
-
-	while (str[i])
-	{
-		while (str[i] == c)
-			i++;
-		if (str[i] == '\0')
-			break ;
-		while (str[i] && str[i] != c)
-			i++;
-		count++;
-
-
-
-
+void	init(t_token *cmd)
+{
+	cmd->next= NULL;
+	cmd->type = 0;
+	cmd->value = NULL;
+}
 
 int	main(void)
 {
 	char					*line;
 	struct sigaction		action;
 	t_token					cmd;
+	// t_parse					parse;
 
 	ft_memset(&action, 0, sizeof(action));
+	ft_memset(&cmd, 0, sizeof(cmd));
 	action.sa_handler = handler;
 	while (1)
 	{
@@ -164,7 +193,7 @@ int	main(void)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		split_line(line, &cmd);
+		lexer(&cmd, line);
 		
 		free(line);
 		// free(cmd.value);
