@@ -63,66 +63,80 @@ void	what_is_it(t_token *cmd, char *str)
 }
 
 
-int	add_node(t_token **head, char *line, int beg, int end)
-{
-	t_token	*new;
-	char	*value;
+// int	add_node(t_token **head, char *line, int beg, int end)
+// {
+// 	t_token	*new;
+// 	char	*value;
+// 	printf("beg= %d, end= %d, end - beg= %d\n", beg, end, end - beg);
+// 	value = malloc(sizeof(char) * (end - beg + 1));
+// 	if (!value)
+// 		return (0);
+// 	// ft_strlcpy(value, &line[beg], end - beg);
+// 	printf("value= %s\n", value);
+// 	if(*head == NULL)
+// 	{
+// 		*head = malloc(sizeof(t_token));
+// 		if (!(*head))
+// 			return ( ft_printf("Error Malloc node lexer", 2), 1);
+// 		(*head)->value = ft_strdup(value);
+// 		what_is_it((*head), value);
+// 		(*head)->next = NULL;
+// 	}
+// 	else
+// 	{
+// 		new = malloc(sizeof(t_token));
+// 		if (!new)
+// 			return ( ft_printf("Error Malloc node lexer", 2), 1);
+// 		new->value = ft_strdup(value);
+// 		what_is_it(new, value);
+// 		new->next = NULL;
+// 		(*head)->next = new;
 
-	value = malloc(sizeof(char) * (end - beg) + 1);
-	if (!value)
-		return (0);
-	ft_strlcpy(value, &line[beg], end - beg);
-	if(*head == NULL)
-	{
-		*head = malloc(sizeof(t_token));
-		if (!(*head))
-			return ( ft_printf("Error Malloc node lexer", 2), 1);
-		(*head)->value = ft_strdup(value);
-		what_is_it((*head), value);
-		(*head)->next = NULL;
-		printf(" un %s\n", value);
-	}
-	else
-	{
-		new = malloc(sizeof(t_token));
-		if (!new)
-			return ( ft_printf("Error Malloc node lexer", 2), 1);
-		new->value = ft_strdup(value);
-		printf(" deux %s\n", value);
-		what_is_it(new, value);
-		new->next = NULL;
-		(*head)->next = new;
+// 	}
 
-	}
-
-	return (0);
-}
+// 	return (0);
+// }
 
 void	parse_line(t_token *cmd, char *line)
 {
+	(void)cmd;
 	int	i;
 	int	flag;
 	int	beg_pos;
+	char	*value;
 
 	i = 0;
 	flag = 0;
-	beg_pos = 0;
 	while (line[i])
 	{
-		if (line[i] == 34 || line[i] == 39)
-		{
-			flag = line[i];
-			beg_pos = i +1;
-			while(line[i])
-			{
-				if (line[i] == '\0')
-					break; //return error unclosed quote
-				if (line[i] == flag)
-					add_node(&cmd, line, beg_pos, i);
-				i++;
-			}
-		}
+		while (line[i] && (line[i] == 32 || line[i] == 9))
+			i++;
+		beg_pos = i;
+		while (line[i] && !(line[i] == 32 || line[i] == 9))
+			i++;
+		value = malloc(sizeof(char) * (i - beg_pos + 1));
+		if (!value)
+			return;
+		ft_strlcpy(value, &line[beg_pos], i - beg_pos);
+		printf("%s\n", value);
+				
+
+		// if (beg_pos < i)
+		// 	add_node(&cmd, line, beg_pos, i - 1);
 		i++;
+		// if (line[i] == 34 || line[i] == 39)
+		// {
+		// 	flag = line[i];
+		// 	beg_pos = i +1;
+		// 	while(line[i])
+		// 	{
+		// 		if (line[i] == '\0')
+		// 			break; //return error unclosed quote
+		// 		if (line[i] == flag)
+		// 			add_node(&cmd, line, beg_pos, i);
+		// 		i++;
+		// 	}
+		// }
 	}
 }
 
