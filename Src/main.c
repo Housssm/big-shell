@@ -63,18 +63,24 @@ void	what_is_it(t_token *cmd, char *str)
 }
 
 
-int	add_node(t_token **prev_node, char *value)
+int	add_node(t_token **head, char *line, int beg, int end)
 {
 	t_token	*new;
+	char	*value;
 
-	if(*prev_node == NULL)
+	value = malloc(sizeof(char) * (end - beg) + 1);
+	if (!value)
+		return (0);
+	ft_strlcpy(value, &line[beg], end - beg);
+	if(*head == NULL)
 	{
-		*prev_node = malloc(sizeof(t_token));
-		if (!(*prev_node))
+		*head = malloc(sizeof(t_token));
+		if (!(*head))
 			return ( ft_printf("Error Malloc node lexer", 2), 1);
-		(*prev_node)->value = ft_strdup(value);
-		what_is_it((*prev_node), value);
-		(*prev_node)->next = NULL;
+		(*head)->value = ft_strdup(value);
+		what_is_it((*head), value);
+		(*head)->next = NULL;
+		printf(" un %s\n", value);
 	}
 	else
 	{
@@ -82,42 +88,45 @@ int	add_node(t_token **prev_node, char *value)
 		if (!new)
 			return ( ft_printf("Error Malloc node lexer", 2), 1);
 		new->value = ft_strdup(value);
+		printf(" deux %s\n", value);
 		what_is_it(new, value);
 		new->next = NULL;
-		(*prev_node)->next = new;
+		(*head)->next = new;
+
 	}
+
 	return (0);
 }
 
-size_t	parse_line(t_token *cmd, char *line)
+void	parse_line(t_token *cmd, char *line)
 {
-	size_t	len;
-	size_t	i;
-	size_t	j;
-	char	*value;
+	int	i;
+	int	flag;
+	int	beg_pos;
 
 	i = 0;
-	len = 0;
-	while(line[i])
+	flag = 0;
+	beg_pos = 0;
+	while (line[i])
 	{
-		while ((line[i] && line[i] > 8 && line[i] < 14) ||(line[i] && line[i] == 32))
-			i++;
-		if (line[i])
-			break; //return error;
-		j = i;
-		while (line[i] && !((line[i] > 8 && line[i] < 14) || line[i] != 32))
-			i++;
-		value = malloc((i = j) + 1);
-		if (!value)
-			return (1);
-		ft_memcpy(value, &line[j], (i - j));
-		value[i - j] = '\0';
-		len = add_node(&cmd, value);
-		printf("[%d, %s]\n", cmd->type, cmd->value);
-		free (value);
+		if (line[i] == 34 || line[i] == 39)
+		{
+			flag = line[i];
+			beg_pos = i +1;
+			while(line[i])
+			{
+				if (line[i] == '\0')
+					break; //return error unclosed quote
+				if (line[i] == flag)
+					add_node(&cmd, line, beg_pos, i);
+				i++;
+			}
+		}
+		i++;
 	}
-	return (len);
 }
+
+
 
 // size_t	parse_line(t_token *cmd, char *line)
 // {
@@ -172,11 +181,25 @@ void	init(t_token *cmd)
 	cmd->value = NULL;
 }
 
+void	boucle_str(t_token **head)
+{
+	t_token *current;
+
+	current = *head;
+	while(head)
+	{
+		printf("[%d, %s]\n",current->type, current->value);
+		current = (*head)->next;
+	}
+}
+
+
+
 int	main(void)
 {
 	char					*line;
 	struct sigaction		action;
-	t_token					cmd;
+	t_token					*cmd;
 	// t_parse					parse;
 
 	ft_memset(&action, 0, sizeof(action));
@@ -193,10 +216,13 @@ int	main(void)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		lexer(&cmd, line);
-		
+		lexer(cmd, line);
+		// boucle_str(&cmd);
+	
 		free(line);
 		// free(cmd.value);
 	}
 	return (0);
 }
+
+

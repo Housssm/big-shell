@@ -37,6 +37,12 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
+/* structure a envoye pour lecxec:
+	-env
+	-token// pas besoin si lexing
+	lexing
+	noeud suidvant
+ */
 typedef	struct s_parse
 {
 	int	pos_first_quote;
