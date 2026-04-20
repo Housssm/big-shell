@@ -35,78 +35,99 @@ void	handler(int sigtype) // function for the main, need one for the parent and 
 	}
 }
 
-void	define_cmd(t_token *cmd, t_type opcode, char *str)
+void	boucle_str(t_token **head) // Fonction pour iterer le long de mes commandes pour voir si la copie a ete bien fait. La fonction a un but de debeug uniquement
+{
+	t_token *current;
+
+	current = *head;
+	while(current)
+	{
+		printf("[%d, %s]\n",current->type, current->value);
+		current = current->next;
+	}
+}
+
+t_token	*ft_add_last(t_token *head) 
+{
+	t_token	*temp;
+
+	if (!head)
+		return (NULL);
+	temp = head;
+	while (temp->next != NULL)
+		temp = temp->next;
+	return (temp);
+}
+
+void	define_cmd(t_token *cmd, t_type opcode) // fonctionne avec la fonction juste en dessous afib de remplir la structure
 {
 		cmd->type = opcode;
-		cmd->value = str;
 		cmd->next = NULL;
 }
 
-void	what_is_it(t_token *cmd, char *str)
+void	what_is_it(t_token *cmd, char *str) // Permet 
 {
 	if	(str[0] == '|')
-		define_cmd(cmd, PIPE, str);
+		define_cmd(cmd, PIPE);
 	else if	(str[0] == '<' && !str[1])
-		define_cmd(cmd, INREDIR, str);
+		define_cmd(cmd, INREDIR);
 	else if	(str[0] == '>' && !str[1])
-		define_cmd(cmd, OUTREDIR, str);
+		define_cmd(cmd, OUTREDIR);
 	else if	(str[0] == '<' && str[1] == '<')
-		define_cmd(cmd, HEREDOC, str);
+		define_cmd(cmd, HEREDOC);
 	else if	(str[0] == '>' && str[1] == '>')
-		define_cmd(cmd, APPOUTREDIR, str);
-	else if ((str[0] >= 'a' && str[0] <= 'z') || str[0] == '-')
-		define_cmd(cmd, WORD, str);
+		define_cmd(cmd, APPOUTREDIR);
+	else
+		define_cmd(cmd, WORD);
+	// else if ((str[0] >= 'a' && str[0] <= 'z') || str[0] == '-')
+	// 	define_cmd(cmd, WORD);
 	// else if (str[0] == 34 | str[0] == 39);
 	// 	define_cmd
-	else
-		return /* (printf("Probleme with the characterer\n")) */; // gerer ce cas d'erreur 
 }
 
 
-// int	add_node(t_token **head, char *line, int beg, int end)
-// {
-// 	t_token	*new;
-// 	char	*value;
-// 	printf("beg= %d, end= %d, end - beg= %d\n", beg, end, end - beg);
-// 	value = malloc(sizeof(char) * (end - beg + 1));
-// 	if (!value)
-// 		return (0);
-// 	// ft_strlcpy(value, &line[beg], end - beg);
-// 	printf("value= %s\n", value);
-// 	if(*head == NULL)
-// 	{
-// 		*head = malloc(sizeof(t_token));
-// 		if (!(*head))
-// 			return ( ft_printf("Error Malloc node lexer", 2), 1);
-// 		(*head)->value = ft_strdup(value);
-// 		what_is_it((*head), value);
-// 		(*head)->next = NULL;
-// 	}
-// 	else
-// 	{
-// 		new = malloc(sizeof(t_token));
-// 		if (!new)
-// 			return ( ft_printf("Error Malloc node lexer", 2), 1);
-// 		new->value = ft_strdup(value);
-// 		what_is_it(new, value);
-// 		new->next = NULL;
-// 		(*head)->next = new;
 
-// 	}
-
-// 	return (0);
-// }
-
-void	parse_line(t_token *cmd, char *line)
+int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et lajoute a la suite du precedant, chaque noeud correspond a un "mot/quote"
 {
-	(void)cmd;
-	int	i;
-	int	flag;
-	int	beg_pos;
+	t_token	*new;
 	char	*value;
 
+	value = malloc(sizeof(char) * (end - beg + 2));
+	if (!value)
+		return (0);
+	ft_strlcpy(value, &line[beg], end - beg + 2);
+	if(*head == NULL)
+	{
+		*head = malloc(sizeof(t_token));
+		if (!(*head))
+			return ( ft_printf("Error Malloc node lexer", 2), 1);
+		(*head)->value = ft_strdup(value);
+		what_is_it((*head), value);
+		(*head)->next = NULL;
+	}
+	else
+	{
+		new = malloc(sizeof(t_token));
+		if (!new)
+			return (free(value), ft_printf("Error Malloc node lexer", 2), 1);
+		new->value = ft_strdup(value);
+		what_is_it(new, value);
+		new->next = NULL;
+		ft_add_last(*head)->next = new;
+
+	}
+	free(value);
+	return (0);
+}
+
+void	parse_line(t_token **cmd, char *line) // fonction permettant ditterer au  sein de la ligne de commande afin de pouvoir separer les differentes commandes
+{
+	int	i;
+	// int	flag;
+	int	beg_pos;
+
 	i = 0;
-	flag = 0;
+	// flag = 0;
 	while (line[i])
 	{
 		while (line[i] && (line[i] == 32 || line[i] == 9))
@@ -114,78 +135,31 @@ void	parse_line(t_token *cmd, char *line)
 		beg_pos = i;
 		while (line[i] && !(line[i] == 32 || line[i] == 9))
 			i++;
-		value = malloc(sizeof(char) * (i - beg_pos + 1));
-		if (!value)
-			return;
-		ft_strlcpy(value, &line[beg_pos], i - beg_pos);
-		printf("%s\n", value);
-				
+		if (beg_pos < i)
+			add_node(cmd, line,beg_pos, i - 1);
 
-		// if (beg_pos < i)
-		// 	add_node(&cmd, line, beg_pos, i - 1);
-		i++;
-		// if (line[i] == 34 || line[i] == 39)
-		// {
-		// 	flag = line[i];
-		// 	beg_pos = i +1;
-		// 	while(line[i])
-		// 	{
-		// 		if (line[i] == '\0')
-		// 			break; //return error unclosed quote
-		// 		if (line[i] == flag)
-		// 			add_node(&cmd, line, beg_pos, i);
-		// 		i++;
-		// 	}
-		// }
 	}
 }
 
 
+void	clear_actual_command(t_token **head) // permet de supprimer les listes chaines correspondant a une ligne afin que chaque ligne soit independante
+{
+	t_token	*current;
 
-// size_t	parse_line(t_token *cmd, char *line)
-// {
-// 	size_t	len;
-// 	size_t	i;
-// 	size_t	j;
-// 	char	*value;
-// 	t_token	*cursor;
+	current = (*head);	
+	while (current)
+	{
+		free(current->value);
+		current = current->next;
+	}
+	*head = NULL;
+}
 
-// 	if (!cmd || !line)
-// 		return (1);
-// 	i = 0;
-// 	len = 0;
-// 	cursor = cmd;
-// 	while (cursor->next)
-// 		cursor = cursor->next;
-// 	while (line[i])
-// 	{
-// 		while (line[i] && ((line[i] >= 9 && line[i] <= 13) || line[i] == 32))
-// 			i++;
-// 		if (!line[i])
-// 			break ;
-// 		j = i;
-// 		while (line[i] && !((line[i] >= 9 && line[i] <= 13) || line[i] == 32))
-// 			i++;
-// 		value = malloc((i - j) + 1);
-// 		if (!value)
-// 			return (1);
-// 		ft_memcpy(value, &line[j], i - j);
-// 		value[i - j] = '\0';
-// 		len = add_node(&cursor, value);
-// 		free(value);
-// 		if (len != 0)
-// 			return (len);
-// 		if (cursor->next)
-// 			cursor = cursor->next;
-// 	}
-// 	return (0);
-// }
-
-
-
-void	lexer(t_token *cmd, char *line)
+void	lexer(t_token **cmd, char *line)
 {
 	parse_line(cmd, line);
+	boucle_str(cmd);
+	clear_actual_command(cmd);
 
 }
 void	init(t_token *cmd)
@@ -195,17 +169,7 @@ void	init(t_token *cmd)
 	cmd->value = NULL;
 }
 
-void	boucle_str(t_token **head)
-{
-	t_token *current;
 
-	current = *head;
-	while(head)
-	{
-		printf("[%d, %s]\n",current->type, current->value);
-		current = (*head)->next;
-	}
-}
 
 
 
@@ -217,7 +181,7 @@ int	main(void)
 	// t_parse					parse;
 
 	ft_memset(&action, 0, sizeof(action));
-	ft_memset(&cmd, 0, sizeof(cmd));
+	cmd = NULL;
 	action.sa_handler = handler;
 	while (1)
 	{
@@ -230,7 +194,7 @@ int	main(void)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		lexer(cmd, line);
+		lexer(&cmd, line);
 		// boucle_str(&cmd);
 	
 		free(line);
