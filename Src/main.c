@@ -123,13 +123,27 @@ int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et 
 void	parse_line(t_token **cmd, char *line) // fonction permettant ditterer au  sein de la ligne de commande afin de pouvoir separer les differentes commandes
 {
 	int	i;
-	// int	flag;
+	int	flag;
 	int	beg_pos;
 
 	i = 0;
-	// flag = 0;
+	flag = 0;
 	while (line[i])
 	{
+		if (line[i] == 39 || line[i] == 34 )
+		{
+			flag = line[i];
+			beg_pos = i + 1;
+			while (line[i] && line[i] != flag)
+				i++;
+			if (line[i] == '\0')
+				return (ft_putstr_fd("Unclosed quote", 2));
+			if (beg_pos < i)
+			{	
+				add_node(cmd, line, beg_pos, i - 1);
+				flag = 0;
+			}
+		}
 		while (line[i] && (line[i] == 32 || line[i] == 9))
 			i++;
 		beg_pos = i;
@@ -142,6 +156,7 @@ void	parse_line(t_token **cmd, char *line) // fonction permettant ditterer au  s
 }
 
 
+
 void	clear_actual_command(t_token **head) // permet de supprimer les listes chaines correspondant a une ligne afin que chaque ligne soit independante
 {
 	t_token	*current;
@@ -151,6 +166,7 @@ void	clear_actual_command(t_token **head) // permet de supprimer les listes chai
 	{
 		free(current->value);
 		current = current->next;
+		free(current);
 	}
 	*head = NULL;
 }
