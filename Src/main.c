@@ -161,12 +161,12 @@ void	clear_actual_command(t_token **head) // permet de supprimer les listes chai
 {
 	t_token	*current;
 
-	current = (*head);	
-	while (current)
+	while ((*head))
 	{
-		free(current->value);
-		current = current->next;
-		free(current);
+		current = (*head)->next;	
+		free((*head)->value);
+		free((*head));
+		*head = current;
 	}
 	*head = NULL;
 }
