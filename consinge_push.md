@@ -3,7 +3,8 @@ Parfait. Fais ça en 2 parties: nettoyer l’historique, puis empêcher les proc
 
 1. Supprimer tous les vgcore.* des anciens commits
 
-Attention: ça réécrit l’historique. Il faudra faire un push forcé ensuite.
+Attention: ça réécrit l’historique. Il faudra faire un push ls 
+ ensuite.
 
 Installe git-filter-repo (si pas déjà installé), puis lance dans ton repo:
 
