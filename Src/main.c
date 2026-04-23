@@ -1,33 +1,23 @@
 #include "minishell.h"
 
-volatile sig_atomic_t   signal_received = 0; // permet de sauvegarder le dernier message avant de quitter 
+volatile sig_atomic_t	g_signal_received = 0; // permet de sauvegarder le dernier message avant de quitter 
 
-/* 
- Fonction qui creer un noeud qui correspond a un s_token et retourb int = taille du token 
-	-identifier  les tokens fixes
-	-enum WORD pour tout les autres avant de les traiter sur le parsing
-	-si une quote jouvre jusqua la prochaine quote 
-	-la  prochaine ligne de commande sarrete quand il y a  un isspace ou un charactere special : |, $ , ', ";
- */
-
-
-//Fonction pour extraire la ligne de commande
-char	*get_line() 
+char	*get_line(void)
 {
-	char *line_read;
+	char	*line_read;
 
-	line_read = (char *)NULL;
+	line_read = (char *) NULL;
 	line_read = readline("shellinho:~$ ");
-	if (line_read && *line_read)	//verifie que la ligne existe et nest pas vide pour la stocker dans lhistorique
+	if (line_read && *line_read)
 		add_history(line_read);
 	return (line_read);
 }
 
-void	handler(int sigtype) // function for the main, need one for the parent and the child
+void	handler(int sigtype)
 {
-	if (sigtype == SIGINT) // si  on a CTRL + C on dit que lon change de ligne et on la redisplay
+	if (sigtype == SIGINT)
 	{
-		signal_received = sigtype;
+		g_signal_received = sigtype;
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		printf("\n");
@@ -35,19 +25,19 @@ void	handler(int sigtype) // function for the main, need one for the parent and 
 	}
 }
 
-void	boucle_str(t_token **head) // Fonction pour iterer le long de mes commandes pour voir si la copie a ete bien fait. La fonction a un but de debeug uniquement
+void	boucle_str(t_token **head)
 {
-	t_token *current;
+	t_token	*current;
 
 	current = *head;
-	while(current)
+	while (current)
 	{
-		printf("[%d, %s]\n",current->type, current->value);
+		printf ("[%d, %s]\n", current->type, current->value);
 		current = current->next;
 	}
 }
 
-t_token	*ft_add_last(t_token *head) 
+t_token	*ft_add_last(t_token *head)
 {
 	t_token	*temp;
 
@@ -59,42 +49,39 @@ t_token	*ft_add_last(t_token *head)
 	return (temp);
 }
 
-void	define_cmd(t_token *cmd, t_type opcode) // fonctionne avec la fonction juste en dessous afib de remplir la structure
+void	define_cmd(t_token *cmd, t_type opcode)
 {
-		cmd->type = opcode;
-		cmd->next = NULL;
+	cmd->type = opcode;
+	cmd->next = NULL;
 }
 
 void	what_is_it(t_token *cmd, char *str) // Permet 
 {
-	if	(str[0] == '|')
+	if (str[0] == '|')
 		define_cmd(cmd, PIPE);
-	else if	(str[0] == '<' && !str[1])
+	else if (str[0] == '<' && !str[1])
 		define_cmd(cmd, INREDIR);
-	else if	(str[0] == '>' && !str[1])
+	else if (str[0] == '>' && !str[1])
 		define_cmd(cmd, OUTREDIR);
-	else if	(str[0] == '<' && str[1] == '<')
+	else if (str[0] == '<' && str[1] == '<')
 		define_cmd(cmd, HEREDOC);
-	else if	(str[0] == '>' && str[1] == '>')
+	else if (str[0] == '>' && str[1] == '>')
 		define_cmd(cmd, APPOUTREDIR);
-	else if	(str[0] == 34)
+	else if (str[0] == 34)
 		define_cmd(cmd, WEAK_QUOTE);
-	else if	(str[0] == 39)
+	else if (str[0] == 39)
 		define_cmd(cmd, STRONG_QUOTE);
 	else
 		define_cmd(cmd, WORD);
-	
 }
 
 int	is_blank(char *str)
 {
 	size_t	i;
-	// char	to_trim[] = {' ', '	'};
 
 	i = 0;
 	while (str[i])
 	{
-		
 		if (str[i] != ' ' && str[i] != '	')
 			return (1);
 		i++;
@@ -102,11 +89,10 @@ int	is_blank(char *str)
 	return (0);
 }
 
-int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et lajoute a la suite du precedant, chaque noeud correspond a un "mot/quote"
+int	add_node(t_token **head, char *line, int beg, int end)
 {
 	t_token	*new;
 	char	*value;
-
 
 	value = malloc(sizeof(char) * (end - beg + 2));
 	if (!value)
@@ -114,11 +100,11 @@ int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et 
 	ft_strlcpy(value, &line[beg], end - beg + 2);
 	if (!is_blank(value))
 		return (0);
-	if(*head == NULL)
+	if (*head == NULL)
 	{
 		*head = malloc(sizeof(t_token));
 		if (!(*head))
-			return ( ft_printf("Error Malloc node lexer", 2), 1);
+			return (ft_printf("Error Malloc node lexer", 2), 1);
 		(*head)->value = ft_strdup(value);
 		what_is_it((*head), value);
 		(*head)->next = NULL;
@@ -137,11 +123,10 @@ int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et 
 	return (0);
 }
 
-
-int	new_token(char c,  int *flag)
+int	new_token(char c, int *flag)
 {
 	int		i;
-	char 	array[] = {
+	char	array[] = {
 		'|', '&', '<', '>', ' ', '	'};
 
 	i = 0;
@@ -161,49 +146,6 @@ int	new_token(char c,  int *flag)
 	}
 	return (0);
 }
-
-// void	parse_line(t_token **cmd, char *line)
-// {
-// 	int		i;
-// 	int		flag;
-// 	int		beg_pos;
-
-// 	i = 0;
-// 	flag = 0;
-// 	beg_pos = 0;
-// 	while (line[i])
-// 	{
-// 		while (line[i] == ' ' || line[i] == '	')
-// 			i++;
-// 		if (line[i] == 34 || line[i] == 39)
-// 		while (line[i] && !new_token(line[i], flag))
-// 		{	
-// 			if (flag != 0)
-// 			{
-// 				beg_pos = i + 1;
-// 				while (line[i] && flag != 0)
-// 				{
-// 					if (new_token(line[i], flag) == 1)
-// 						i++;
-// 					i++;
-// 				}
-// 				if (line[i] == '\0')
-// 					return (ft_putstr_fd("Unclosed quote\n", 2));
-// 				add_node(cmd, line, beg_pos, i);
-// 				break;
-// 			}
-// 			i++;
-// 		}
-// 		if (beg_pos < i)
-// 			add_node(cmd, line, beg_pos, i);
-// 		if (new_token(line[i], flag))
-// 		{
-// 			add_node(cmd, line, i, i);
-// 			i++;
-// 			beg_pos = i;
-// 		}
-// 	}
-// }
 
 
 void	parse_line(t_token **cmd, char *line)
@@ -236,7 +178,7 @@ void	parse_line(t_token **cmd, char *line)
 				beg_pos = i;
 			}
 			else
-				return(ft_putstr_fd("Unclosed quote\n", 2));
+				return (ft_putstr_fd("Unclosed quote\n", 2));
 		}
 		while (line[i] && !new_token(line[i], &flag))
 			i++;
@@ -251,6 +193,58 @@ void	parse_line(t_token **cmd, char *line)
 	}
 }
 
+// int	what_if_quote(t_token **cmd, char *line, int *flag, int beg_pos, int i)
+// {
+
+// 	add_node(cmd, line , i, i);
+// 	*flag = line[i];
+// 	i++;
+// 	beg_pos = i;
+// 	while (line[i] && line[i] != *flag)
+// 		i++;
+// 	if (line[i] == *flag)
+// 	{
+// 		add_node(cmd, line, beg_pos, i - 1);
+// 		add_node(cmd, line, i, i);
+// 		i++;
+// 		beg_pos = i;
+// 		return (0);
+// 	}
+// 	else
+// 		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
+// }
+
+// void	parse_line(t_token **cmd, char *line)
+// {
+// 	int		i;
+// 	int		flag;
+// 	int		beg_pos;
+
+// 	i = 0;
+// 	flag = 0;
+// 	beg_pos = 0;
+// 	while (line[i])
+// 	{
+// 		while (line[i] == ' ' || line[i] == '	')
+// 			i++;
+// 		beg_pos = i;
+// 		if (line[i] == 34 || line[i] == 39)
+// 		{
+// 			if (what_if_quote(cmd, line, &flag, beg_pos, i))
+// 				return ;
+// 		}
+// 		while (line[i] && !new_token(line[i], &flag))
+// 			i++;
+// 		if (beg_pos < i)
+// 			add_node(cmd, line, beg_pos, i);
+// 		if (new_token(line[i], &flag))
+// 		{
+// 			add_node(cmd, line, i, i);
+// 			i++;
+// 			beg_pos = i;
+// 		}
+// 	}
+// }
 
 void	clear_actual_command(t_token **head)
 {
@@ -258,7 +252,7 @@ void	clear_actual_command(t_token **head)
 
 	while ((*head))
 	{
-		current = (*head)->next;	
+		current = (*head)->next;
 		free((*head)->value);
 		free((*head));
 		*head = current;
@@ -271,23 +265,20 @@ void	lexer(t_token **cmd, char *line)
 	parse_line(cmd, line);
 	boucle_str(cmd);
 	clear_actual_command(cmd);
-
 }
+
 void	init(t_token *cmd)
 {
-	cmd->next= NULL;
+	cmd->next = NULL;
 	cmd->type = 0;
 	cmd->value = NULL;
 }
-
-
 
 int	main(void)
 {
 	char					*line;
 	struct sigaction		action;
 	t_token					*cmd;
-	// t_parse					parse;
 
 	ft_memset(&action, 0, sizeof(action));
 	cmd = NULL;
@@ -305,11 +296,8 @@ int	main(void)
 		signal(SIGQUIT, SIG_IGN);
 		lexer(&cmd, line);
 		boucle_str(&cmd);
-	
 		free(line);
 		// free(cmd.value);
 	}
 	return (0);
 }
-
-

@@ -49,7 +49,7 @@ typedef	struct s_parse
 	int	pos_sec_quote;
 }	t_parse;
 
-volatile sig_atomic_t   signal_received; // utilisation dune variable volatile car cest un e variable dont la valeur va etre modifier en dehors du programme --> ASSURE UNE PORTABILITE GENERALE
+volatile sig_atomic_t   g_signal_received; // utilisation dune variable volatile car cest un e variable dont la valeur va etre modifier en dehors du programme --> ASSURE UNE PORTABILITE GENERALE
 
 
 // pq sigaction ?plus complexe que signal, early version diidn't automatically restart systeme calls, signal is set back to its default behavior each time so we need to restablish the handler every time after the signal had occured 
