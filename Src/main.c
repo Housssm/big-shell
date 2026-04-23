@@ -77,25 +77,43 @@ void	what_is_it(t_token *cmd, char *str) // Permet
 		define_cmd(cmd, HEREDOC);
 	else if	(str[0] == '>' && str[1] == '>')
 		define_cmd(cmd, APPOUTREDIR);
+	else if	(str[0] == 34)
+		define_cmd(cmd, WEAK_QUOTE);
+	else if	(str[0] == 39)
+		define_cmd(cmd, STRONG_QUOTE);
 	else
 		define_cmd(cmd, WORD);
-	// else if ((str[0] >= 'a' && str[0] <= 'z') || str[0] == '-')
-	// 	define_cmd(cmd, WORD);
-	// else if (str[0] == 34 | str[0] == 39);
-	// 	define_cmd
+	
 }
 
+int	is_blank(char *str)
+{
+	size_t	i;
+	// char	to_trim[] = {' ', '	'};
 
+	i = 0;
+	while (str[i])
+	{
+		
+		if (str[i] != ' ' && str[i] != '	')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et lajoute a la suite du precedant, chaque noeud correspond a un "mot/quote"
 {
 	t_token	*new;
 	char	*value;
 
+
 	value = malloc(sizeof(char) * (end - beg + 2));
 	if (!value)
 		return (0);
 	ft_strlcpy(value, &line[beg], end - beg + 2);
+	if (!is_blank(value))
+		return (0);
 	if(*head == NULL)
 	{
 		*head = malloc(sizeof(t_token));
@@ -114,50 +132,127 @@ int	add_node(t_token **head, char *line, int beg, int end) // creer un noeud et 
 		what_is_it(new, value);
 		new->next = NULL;
 		ft_add_last(*head)->next = new;
-
 	}
 	free(value);
 	return (0);
 }
 
-void	parse_line(t_token **cmd, char *line) // fonction permettant ditterer au  sein de la ligne de commande afin de pouvoir separer les differentes commandes
+
+int	new_token(char c,  int *flag)
 {
-	int	i;
-	int	flag;
-	int	beg_pos;
+	int		i;
+	char 	array[] = {
+		'|', '&', '<', '>', ' ', '	'};
+
+	i = 0;
+	if (c == 34 || c == 39)
+	{
+		if (*flag == 0)
+			*flag = c;
+		else if (*flag == c)
+			*flag = 0;
+		return (1);
+	}
+	while (array[i])
+	{
+		if (array[i] == c)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+// void	parse_line(t_token **cmd, char *line)
+// {
+// 	int		i;
+// 	int		flag;
+// 	int		beg_pos;
+
+// 	i = 0;
+// 	flag = 0;
+// 	beg_pos = 0;
+// 	while (line[i])
+// 	{
+// 		while (line[i] == ' ' || line[i] == '	')
+// 			i++;
+// 		if (line[i] == 34 || line[i] == 39)
+// 		while (line[i] && !new_token(line[i], flag))
+// 		{	
+// 			if (flag != 0)
+// 			{
+// 				beg_pos = i + 1;
+// 				while (line[i] && flag != 0)
+// 				{
+// 					if (new_token(line[i], flag) == 1)
+// 						i++;
+// 					i++;
+// 				}
+// 				if (line[i] == '\0')
+// 					return (ft_putstr_fd("Unclosed quote\n", 2));
+// 				add_node(cmd, line, beg_pos, i);
+// 				break;
+// 			}
+// 			i++;
+// 		}
+// 		if (beg_pos < i)
+// 			add_node(cmd, line, beg_pos, i);
+// 		if (new_token(line[i], flag))
+// 		{
+// 			add_node(cmd, line, i, i);
+// 			i++;
+// 			beg_pos = i;
+// 		}
+// 	}
+// }
+
+
+void	parse_line(t_token **cmd, char *line)
+{
+	int		i;
+	int		flag;
+	int		beg_pos;
 
 	i = 0;
 	flag = 0;
+	beg_pos = 0;
 	while (line[i])
 	{
-		if (line[i] == 39 || line[i] == 34 )
-		{
-			flag = line[i];
-			beg_pos = i + 1;
-			while (line[i] && line[i] != flag)
-				i++;
-			if (line[i] == '\0')
-				return (ft_putstr_fd("Unclosed quote", 2));
-			if (beg_pos < i)
-			{	
-				add_node(cmd, line, beg_pos, i - 1);
-				flag = 0;
-			}
-		}
-		while (line[i] && (line[i] == 32 || line[i] == 9))
+		while (line[i] == ' ' || line[i] == '	')
 			i++;
 		beg_pos = i;
-		while (line[i] && !(line[i] == 32 || line[i] == 9))
+		if (line[i] == 34 || line[i] == 39)
+		{
+			add_node(cmd, line , i, i);
+			flag = line[i];
+			i++;
+			beg_pos = i;
+			while (line[i] && line[i] != flag)
+				i++;
+			if (line[i] == flag)
+			{
+				add_node(cmd, line, beg_pos, i - 1);
+				add_node(cmd, line, i, i);
+				i++;
+				beg_pos = i;
+			}
+			else
+				return(ft_putstr_fd("Unclosed quote\n", 2));
+		}
+		while (line[i] && !new_token(line[i], &flag))
 			i++;
 		if (beg_pos < i)
-			add_node(cmd, line,beg_pos, i - 1);
-
+			add_node(cmd, line, beg_pos, i);
+		if (new_token(line[i], &flag))
+		{
+			add_node(cmd, line, i, i);
+			i++;
+			beg_pos = i;
+		}
 	}
 }
 
 
-
-void	clear_actual_command(t_token **head) // permet de supprimer les listes chaines correspondant a une ligne afin que chaque ligne soit independante
+void	clear_actual_command(t_token **head)
 {
 	t_token	*current;
 
@@ -187,8 +282,6 @@ void	init(t_token *cmd)
 
 
 
-
-
 int	main(void)
 {
 	char					*line;
@@ -211,7 +304,7 @@ int	main(void)
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
 		lexer(&cmd, line);
-		// boucle_str(&cmd);
+		boucle_str(&cmd);
 	
 		free(line);
 		// free(cmd.value);
