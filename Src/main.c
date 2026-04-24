@@ -99,14 +99,14 @@ int	add_node(t_token **head, char *line, int beg, int end)
 		return (0);
 	ft_strlcpy(value, &line[beg], end - beg + 2);
 	if (!is_blank(value))
-		return (0);
+		return (free(value), 0);
 	if (*head == NULL)
 	{
 		*head = malloc(sizeof(t_token));
 		if (!(*head))
-			return (ft_printf("Error Malloc node lexer", 2), 1);
+			return (free(value),ft_printf("Error Malloc node lexer", 2), 1);
 		(*head)->value = ft_strdup(value);
-		what_is_it((*head), value);
+		what_is_it((*head), (*head)->value);
 		(*head)->next = NULL;
 	}
 	else
@@ -115,7 +115,7 @@ int	add_node(t_token **head, char *line, int beg, int end)
 		if (!new)
 			return (free(value), ft_printf("Error Malloc node lexer", 2), 1);
 		new->value = ft_strdup(value);
-		what_is_it(new, value);
+		what_is_it(new, new->value);
 		new->next = NULL;
 		ft_add_last(*head)->next = new;
 	}
@@ -129,15 +129,9 @@ int	new_token(char c, int *flag)
 	char	array[] = {
 		'|', '&', '<', '>', ' ', '	'};
 
+	if (*flag != 0)
+		return (0);
 	i = 0;
-	if (c == 34 || c == 39)
-	{
-		if (*flag == 0)
-			*flag = c;
-		else if (*flag == c)
-			*flag = 0;
-		return (1);
-	}
 	while (array[i])
 	{
 		if (array[i] == c)
@@ -149,29 +143,28 @@ int	new_token(char c, int *flag)
 
 int	what_if_quote(t_token **cmd, char *line, int *flag, int *beg_pos, int *i)
 {
-	if (line[*i] == 34 || line[*i] == 39)
+	if (line[*i] != 34 && line[*i] != 39)
+		return (0);
+	add_node(cmd, line , *i, *i);
+	*flag = line[*i];
+	(*i)++;
+	*beg_pos = *i;
+	while (line[*i] && line[*i] != *flag)
+		(*i)++;
+	if (line[*i] == *flag)
 	{
-		add_node(cmd, line , *i, *i);
-		*flag = line[*i];
+		add_node(cmd, line, *beg_pos, *i - 1);
+		add_node(cmd, line, *i, *i);
 		(*i)++;
 		*beg_pos = *i;
-		while (line[*i] && line[*i] != *flag)
-			(*i)++;
-		if (line[*i] == *flag)
-		{
-			add_node(cmd, line, *beg_pos, *i - 1);
-			add_node(cmd, line, *i, *i);
-			(*i)++;
-			*beg_pos = *i;
-			*flag = 0;
-		}
-		else
-			return (ft_putstr_fd("Unclosed quote\n", 2), 1);
+		*flag = 0;
 	}
+	else
+		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
 	return (0);
 }
 
-void	parse_line(t_token **cmd, char *line)
+int	parse_line(t_token **cmd, char *line)
 {
 	int		i;
 	int		flag;
@@ -184,13 +177,30 @@ void	parse_line(t_token **cmd, char *line)
 	{
 		while (line[i] == ' ' || line[i] == '	')
 			i++;
+		if (!line[i])
+			break;
 		beg_pos = i;
-		if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
-			return ;
+		if (line[i] == 34 || line[i] == 39)
+		{
+			if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
+				return (1);
+			continue;
+		}
 		while (line[i] && !new_token(line[i], &flag))
-			i++;
+		{
+			if (line[i] == 34 || line[i] == 39)
+			{
+				if (beg_pos < i)
+					add_node(cmd, line, beg_pos, i - 1);
+				if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
+					return (1);
+				beg_pos = i;
+			}
+			else
+				i++;
+		}
 		if (beg_pos < i)
-			add_node(cmd, line, beg_pos, i);
+			add_node(cmd, line, beg_pos, i - 1);
 		if (line[i] && new_token(line[i], &flag))
 		{
 			add_node(cmd, line, i, i);
@@ -198,6 +208,7 @@ void	parse_line(t_token **cmd, char *line)
 			beg_pos = i;
 		}
 	}
+	return (0);
 }
 
 void	clear_actual_command(t_token **head)
@@ -216,7 +227,8 @@ void	clear_actual_command(t_token **head)
 
 void	lexer(t_token **cmd, char *line)
 {
-	parse_line(cmd, line);
+	if (parse_line(cmd, line))
+		return (clear_actual_command(cmd));
 	boucle_str(cmd);
 	clear_actual_command(cmd);
 }
