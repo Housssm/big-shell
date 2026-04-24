@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal_received = 0; // permet de sauvegarder le dernier message avant de quitter 
+volatile sig_atomic_t	g_signal_received = 0; // save lst msg  
 
 char	*get_line(void)
 {
@@ -147,6 +147,29 @@ int	new_token(char c, int *flag)
 	return (0);
 }
 
+int	what_if_quote(t_token **cmd, char *line, int *flag, int *beg_pos, int *i)
+{
+	if (line[*i] == 34 || line[*i] == 39)
+	{
+		add_node(cmd, line , *i, *i);
+		*flag = line[*i];
+		(*i)++;
+		*beg_pos = *i;
+		while (line[*i] && line[*i] != *flag)
+			(*i)++;
+		if (line[*i] == *flag)
+		{
+			add_node(cmd, line, *beg_pos, *i - 1);
+			add_node(cmd, line, *i, *i);
+			(*i)++;
+			*beg_pos = *i;
+			*flag = 0;
+		}
+		else
+			return (ft_putstr_fd("Unclosed quote\n", 2), 1);
+	}
+	return (0);
+}
 
 void	parse_line(t_token **cmd, char *line)
 {
@@ -162,29 +185,13 @@ void	parse_line(t_token **cmd, char *line)
 		while (line[i] == ' ' || line[i] == '	')
 			i++;
 		beg_pos = i;
-		if (line[i] == 34 || line[i] == 39)
-		{
-			add_node(cmd, line , i, i);
-			flag = line[i];
-			i++;
-			beg_pos = i;
-			while (line[i] && line[i] != flag)
-				i++;
-			if (line[i] == flag)
-			{
-				add_node(cmd, line, beg_pos, i - 1);
-				add_node(cmd, line, i, i);
-				i++;
-				beg_pos = i;
-			}
-			else
-				return (ft_putstr_fd("Unclosed quote\n", 2));
-		}
+		if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
+			return ;
 		while (line[i] && !new_token(line[i], &flag))
 			i++;
 		if (beg_pos < i)
 			add_node(cmd, line, beg_pos, i);
-		if (new_token(line[i], &flag))
+		if (line[i] && new_token(line[i], &flag))
 		{
 			add_node(cmd, line, i, i);
 			i++;
@@ -192,59 +199,6 @@ void	parse_line(t_token **cmd, char *line)
 		}
 	}
 }
-
-// int	what_if_quote(t_token **cmd, char *line, int *flag, int beg_pos, int i)
-// {
-
-// 	add_node(cmd, line , i, i);
-// 	*flag = line[i];
-// 	i++;
-// 	beg_pos = i;
-// 	while (line[i] && line[i] != *flag)
-// 		i++;
-// 	if (line[i] == *flag)
-// 	{
-// 		add_node(cmd, line, beg_pos, i - 1);
-// 		add_node(cmd, line, i, i);
-// 		i++;
-// 		beg_pos = i;
-// 		return (0);
-// 	}
-// 	else
-// 		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
-// }
-
-// void	parse_line(t_token **cmd, char *line)
-// {
-// 	int		i;
-// 	int		flag;
-// 	int		beg_pos;
-
-// 	i = 0;
-// 	flag = 0;
-// 	beg_pos = 0;
-// 	while (line[i])
-// 	{
-// 		while (line[i] == ' ' || line[i] == '	')
-// 			i++;
-// 		beg_pos = i;
-// 		if (line[i] == 34 || line[i] == 39)
-// 		{
-// 			if (what_if_quote(cmd, line, &flag, beg_pos, i))
-// 				return ;
-// 		}
-// 		while (line[i] && !new_token(line[i], &flag))
-// 			i++;
-// 		if (beg_pos < i)
-// 			add_node(cmd, line, beg_pos, i);
-// 		if (new_token(line[i], &flag))
-// 		{
-// 			add_node(cmd, line, i, i);
-// 			i++;
-// 			beg_pos = i;
-// 		}
-// 	}
-// }
 
 void	clear_actual_command(t_token **head)
 {
@@ -295,9 +249,7 @@ int	main(void)
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
 		lexer(&cmd, line);
-		boucle_str(&cmd);
-		free(line);
-		// free(cmd.value);
+		free(line);  // +fonction qui free tout 
 	}
 	return (0);
 }
