@@ -126,8 +126,7 @@ int	add_node(t_token **head, char *line, int beg, int end)
 int	new_token(char c, int *flag)
 {
 	int		i;
-	char	array[] = {
-		'|', '&', '<', '>', ' ', '	'};
+	char	array[] = {'|', '&', '<', '>', ' ', '	'};
 
 	if (*flag != 0)
 		return (0);
@@ -164,6 +163,7 @@ int	what_if_quote(t_token **cmd, char *line, int *flag, int *beg_pos, int *i)
 	return (0);
 }
 
+
 int	parse_line(t_token **cmd, char *line)
 {
 	int		i;
@@ -177,14 +177,11 @@ int	parse_line(t_token **cmd, char *line)
 	{
 		while (line[i] == ' ' || line[i] == '	')
 			i++;
-		if (!line[i])
-			break;
 		beg_pos = i;
 		if (line[i] == 34 || line[i] == 39)
 		{
 			if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
 				return (1);
-			continue;
 		}
 		while (line[i] && !new_token(line[i], &flag))
 		{
@@ -207,9 +204,11 @@ int	parse_line(t_token **cmd, char *line)
 			i++;
 			beg_pos = i;
 		}
+		
 	}
 	return (0);
 }
+
 
 void	clear_actual_command(t_token **head)
 {
