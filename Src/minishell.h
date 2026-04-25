@@ -49,9 +49,12 @@ typedef struct s_parse
 	int	pos_sec_quote;
 }	t_parse;
 
-volatile sig_atomic_t	g_signal_received;
-// utilisation dune variable volatile car
-// un e variable dont la valeur va etre modifier en dehors du programme
-//--> ASSURE UNE PORTABILITE GENERALE
+extern volatile sig_atomic_t	g_signal_received; // var dt valeur pt etre mod en dehors progr -> assure portabilite general
+
+// Lexer
+char	*get_line(void);
+void	handler(int sigtype);
+
+
 
 #endif

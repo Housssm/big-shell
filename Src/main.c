@@ -1,29 +1,29 @@
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal_received = 0; // save lst msg  
+// volatile sig_atomic_t	g_signal_received = 0; // save lst msg  
 
-char	*get_line(void)
-{
-	char	*line_read;
+// char	*get_line(void)
+// {
+// 	char	*line_read;
 
-	line_read = (char *) NULL;
-	line_read = readline("shellinho:~$ ");
-	if (line_read && *line_read)
-		add_history(line_read);
-	return (line_read);
-}
+// 	line_read = (char *) NULL;
+// 	line_read = readline("shellinho:~$ ");
+// 	if (line_read && *line_read)
+// 		add_history(line_read);
+// 	return (line_read);
+// }
 
-void	handler(int sigtype)
-{
-	if (sigtype == SIGINT)
-	{
-		g_signal_received = sigtype;
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		printf("\n");
-		rl_redisplay();
-	}
-}
+// void	handler(int sigtype)
+// {
+// 	if (sigtype == SIGINT)
+// 	{
+// 		g_signal_received = sigtype;
+// 		rl_on_new_line();
+// 		rl_replace_line("", 0);
+// 		printf("\n");
+// 		rl_redisplay();
+// 	}
+// }
 
 void	boucle_str(t_token **head)
 {
@@ -89,45 +89,47 @@ int	is_blank(char *str)
 	return (0);
 }
 
-int	add_node(t_token **head, char *line, int beg, int end)
+t_token	*create_token_from_line(char *line, int beg, int end)
 {
-	t_token	*new;
 	char	*value;
+	t_token	*token;
 
 	value = malloc(sizeof(char) * (end - beg + 2));
 	if (!value)
-		return (0);
+		return (NULL);
 	ft_strlcpy(value, &line[beg], end - beg + 2);
 	if (!is_blank(value))
-		return (free(value), 0);
-	if (*head == NULL)
-	{
-		*head = malloc(sizeof(t_token));
-		if (!(*head))
-			return (free(value),ft_printf("Error Malloc node lexer", 2), 1);
-		(*head)->value = ft_strdup(value);
-		what_is_it((*head), (*head)->value);
-		(*head)->next = NULL;
-	}
-	else
-	{
-		new = malloc(sizeof(t_token));
-		if (!new)
-			return (free(value), ft_printf("Error Malloc node lexer", 2), 1);
-		new->value = ft_strdup(value);
-		what_is_it(new, new->value);
-		new->next = NULL;
-		ft_add_last(*head)->next = new;
-	}
+		return (free(value), NULL);
+	token = malloc(sizeof(t_token));
+	if (!token)
+		return (free(value), ft_printf("Error Malloc node lexer", 2), NULL);
+	token->value = ft_strdup(value);
+	what_is_it(token, token->value);
+	token->next = NULL;
 	free(value);
+	return (token);
+}
+
+int	add_node(t_token **head, char *line, int beg, int end)
+{
+	t_token	*new_token;
+
+	new_token = create_token_from_line(line, beg, end);
+	if (!new_token)
+		return (1);
+	if (!*head)
+		*head = new_token;
+	else
+		ft_add_last(*head)->next = new_token;
 	return (0);
 }
 
 int	new_token(char c, int *flag)
 {
 	int		i;
-	char	array[] = {'|', '&', '<', '>', ' ', '	'};
+	char	*array;
 
+	array = "|&<> \t";
 	if (*flag != 0)
 		return (0);
 	i = 0;
@@ -140,75 +142,74 @@ int	new_token(char c, int *flag)
 	return (0);
 }
 
-int	what_if_quote(t_token **cmd, char *line, int *flag, int *beg_pos, int *i)
+int	handle_quote(t_token **cmd, char *line, int *i, int *in_quote)
 {
-	if (line[*i] != 34 && line[*i] != 39)
-		return (0);
-	add_node(cmd, line , *i, *i);
-	*flag = line[*i];
+	char	quote_char;
+	int		start;
+
+	quote_char = line[*i];
+	add_node(cmd, line, *i, *i);
 	(*i)++;
-	*beg_pos = *i;
-	while (line[*i] && line[*i] != *flag)
+	start = *i;
+	while (line[*i] && line[*i] != quote_char)
 		(*i)++;
-	if (line[*i] == *flag)
-	{
-		add_node(cmd, line, *beg_pos, *i - 1);
-		add_node(cmd, line, *i, *i);
-		(*i)++;
-		*beg_pos = *i;
-		*flag = 0;
-	}
-	else
+	if (!line[*i])
 		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
+	add_node(cmd, line, start, *i - 1);
+	add_node(cmd, line, *i, *i);
+	(*i)++;
+	*in_quote = 0;
 	return (0);
 }
 
+// Ajoute un token normal (mot) si présent
+void	add_word_token(t_token **cmd, char *line, int start, int end)
+{
+	if (start < end)
+		add_node(cmd, line, start, end - 1);
+}
 
+// Traite un token (mot ou début de quote)
+int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
+{
+	int	start;
+
+	start = *i;
+	if (line[*i] == 34 || line[*i] == 39)
+	{
+		*in_quote = 1;
+		return (handle_quote(cmd, line, i, in_quote));
+	}
+	while (line[*i] && !new_token(line[*i], in_quote))
+		(*i)++;
+	add_word_token(cmd, line, start, *i);
+	return (0);
+}
+
+// Tokenise toute la ligne
 int	parse_line(t_token **cmd, char *line)
 {
-	int		i;
-	int		flag;
-	int		beg_pos;
+	int	i;
+	int	in_quote;
 
 	i = 0;
-	flag = 0;
-	beg_pos = 0;
+	in_quote = 0;
 	while (line[i])
 	{
-		while (line[i] == ' ' || line[i] == '	')
+		while (line[i] == ' ' || line[i] == '\t')
 			i++;
-		beg_pos = i;
-		if (line[i] == 34 || line[i] == 39)
-		{
-			if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
-				return (1);
-		}
-		while (line[i] && !new_token(line[i], &flag))
-		{
-			if (line[i] == 34 || line[i] == 39)
-			{
-				if (beg_pos < i)
-					add_node(cmd, line, beg_pos, i - 1);
-				if (what_if_quote(cmd, line, &flag, &beg_pos, &i))
-					return (1);
-				beg_pos = i;
-			}
-			else
-				i++;
-		}
-		if (beg_pos < i)
-			add_node(cmd, line, beg_pos, i - 1);
-		if (line[i] && new_token(line[i], &flag))
+		if (!line[i])
+			break ;
+		if (process_token(cmd, line, &i, &in_quote))
+			return (1);
+		if (line[i] && !in_quote && new_token(line[i], &in_quote))
 		{
 			add_node(cmd, line, i, i);
 			i++;
-			beg_pos = i;
 		}
-		
 	}
 	return (0);
 }
-
 
 void	clear_actual_command(t_token **head)
 {
@@ -232,12 +233,6 @@ void	lexer(t_token **cmd, char *line)
 	clear_actual_command(cmd);
 }
 
-void	init(t_token *cmd)
-{
-	cmd->next = NULL;
-	cmd->type = 0;
-	cmd->value = NULL;
-}
 
 int	main(void)
 {
@@ -260,7 +255,7 @@ int	main(void)
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
 		lexer(&cmd, line);
-		free(line);  // +fonction qui free tout 
+		free(line);// +fonction qui free tout 
 	}
 	return (0);
 }

@@ -1,4 +1,5 @@
 SRCS = \
+	Src/Lexer/readline.c\
 	Src/main.c
 
 OBJS = $(SRCS:.c=.o)
