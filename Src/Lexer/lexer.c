@@ -1,38 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   readline.c                                         :+:      :+:    :+:   */
+/*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/25 13:35:58 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 13:35:59 by hoel-har         ###   ########.fr       */
+/*   Created: 2026/04/25 13:36:47 by hoel-har          #+#    #+#             */
+/*   Updated: 2026/04/25 13:38:21 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-volatile sig_atomic_t	g_signal_received = 0; // save lst msg  
-
-char	*get_line(void)
+int	is_blank(char *str)
 {
-	char	*line_read;
+	size_t	i;
 
-	line_read = (char *) NULL;
-	line_read = readline("shellinho:~$ ");
-	if (line_read && *line_read)
-		add_history(line_read);
-	return (line_read);
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ' && str[i] != '	')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
-void	handler(int sigtype)
+void	lexer(t_token **cmd, char *line)
 {
-	if (sigtype == SIGINT)
-	{
-		g_signal_received = sigtype;
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		printf("\n");
-		rl_redisplay();
-	}
+	if (parse_line(cmd, line))
+		return (clear_actual_command(cmd));
+	boucle_str(cmd);
+	clear_actual_command(cmd);
 }
