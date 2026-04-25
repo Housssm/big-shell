@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:58 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 13:50:46 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:33:40 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	handler(int sigtype)
 		rl_redisplay();
 	}
 }
+
 int	is_blank(char *str)
 {
 	size_t	i;
@@ -49,4 +50,3 @@ int	is_blank(char *str)
 	}
 	return (0);
 }
-

@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 12:53:03 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/14 20:00:47 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:37:04 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,6 @@ void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 int		ft_countwords(char *str, char c);
 void	free_split(char **tab);
-int	    ft_countwords(char *str, char c);
+int		ft_countwords(char *str, char c);
 
 #endif

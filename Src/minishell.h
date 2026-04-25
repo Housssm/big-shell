@@ -86,6 +86,4 @@ void	boucle_str(t_token **head);
 void	clear_actual_command(t_token **head);
 /*************************** TEMPORAIRE ************************/
 
-
-
 #endif

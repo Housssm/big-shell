@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/09 18:16:00 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/06 15:47:20 by marvin           ###   ########.fr       */
+/*   Updated: 2026/04/25 15:37:47 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	if (dlen >= size)
 		return (size + slen);
 	else
-	{	
+	{
 		while (src[i] && tofill--)
 		{
 			dst[dlen + i] = src[i];

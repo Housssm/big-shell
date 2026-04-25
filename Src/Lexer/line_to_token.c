@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 13:35:53 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:32:50 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,19 @@ int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
 	int	start;
 
 	start = *i;
-	if (line[*i] == 34 || line[*i] == 39)
-	{
-		*in_quote = 1;
-		return (handle_quote(cmd, line, i, in_quote));
-	}
 	while (line[*i] && !new_token(line[*i], in_quote))
+	{
+		if ((line[*i] == 34 || line[*i] == 39) && *in_quote == 0)
+		{
+			if (start < *i)
+				add_node(cmd, line, start, *i - 1);
+			*in_quote = 1;
+			return (handle_quote(cmd, line, i, in_quote));
+		}
 		(*i)++;
-	add_word_token(cmd, line, start, *i);
+	}
+	if (start < *i)
+		add_node(cmd, line, start, *i - 1);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 10:30:10 by hoel-har          #+#    #+#             */
-/*   Updated: 2025/11/22 15:47:19 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:38:40 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	ft_lstadd_front(t_list **lst, t_list *new)
 {
-		new->next = *lst;
-		*lst = new;
+	new->next = *lst;
+	*lst = new;
 }
 
 /*int	main()

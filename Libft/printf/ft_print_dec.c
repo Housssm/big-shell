@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 12:23:35 by hoel-har          #+#    #+#             */
-/*   Updated: 2025/12/02 16:15:32 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:36:24 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_putnbr(int nb)
 	{
 		ft_putchar('-');
 		nbr = -nbr ;
-	}	
+	}
 	if (nbr > 9)
 	{
 		ft_putnbr(nbr / 10);

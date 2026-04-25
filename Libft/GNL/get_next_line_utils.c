@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/18 19:02:55 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/16 19:00:33 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:39:05 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	count_line(t_list **lst)
 	j = 0;
 	count = 0;
 	while (temp != NULL)
-	{		
+	{
 		j = 0;
 		while (((char *)temp->content)[j])
 		{

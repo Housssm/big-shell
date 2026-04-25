@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 13:35:34 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/02/19 11:32:27 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:39:25 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}t_list;
+}	t_list;
 
 int		count_line(t_list **lst);
 // int		ft_strlen(char *str);

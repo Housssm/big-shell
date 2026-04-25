@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 11:40:04 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/16 21:23:44 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:38:21 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	ft_countwords(char *str, char c)
 	while (str[i])
 	{
 		while (str[i] == c)
-				i++;
+			i++;
 		if (str[i] == '\0')
 			break ;
 		while (str[i] && str[i] != c)
@@ -31,7 +31,6 @@ int	ft_countwords(char *str, char c)
 	}
 	return (count);
 }
-
 
 char	*ft_fill_tab(char *str, int length)
 {
@@ -57,7 +56,7 @@ void	free_split(char **tab)
 
 	i = 0;
 	while (tab[i])
-	{	
+	{
 		free(tab[i]);
 		i++;
 	}

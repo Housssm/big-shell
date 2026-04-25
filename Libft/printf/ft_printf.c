@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 11:57:21 by hoel-har          #+#    #+#             */
-/*   Updated: 2025/12/04 11:21:15 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:36:05 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	ft_printf(const char *str, ...)
 			i++;
 		}
 		else
-		count += write(1, &str[i], 1);
+			count += write(1, &str[i], 1);
 		i++;
 	}
 	va_end(args);

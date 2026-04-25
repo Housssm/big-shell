@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/15 14:14:48 by hoel-har          #+#    #+#             */
-/*   Updated: 2025/11/22 15:32:13 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/25 15:37:32 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	ft_isset(char c, char const *s2)
 
 	i = 0;
 	while (s2[i])
-	{	
+	{
 		if (s2[i] == c)
 			return (1);
 		i++;
@@ -35,7 +35,7 @@ char	*ft_strtrim(char const *s1, char const *s2)
 
 	i = 0;
 	while (s1[i] && ft_isset(s1[i], s2))
-			i++;
+		i++;
 	idxbeg = i;
 	i = ft_strlen(s1) - 1;
 	while (ft_isset(s1[i], s2))

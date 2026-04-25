@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/25 16:39:29 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/06 15:44:42 by marvin           ###   ########.fr       */
+/*   Updated: 2026/04/25 15:35:50 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include   <unistd.h>
-# include   <stdio.h>
-# include   <stdlib.h>
-# include   <string.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
 // # include   <bsd/string.h>
-# include   <stdint.h>
-# include   <stdarg.h>
-# include   <limits.h>
+# include <stdint.h>
+# include <stdarg.h>
+# include <limits.h>
 
 int	ft_print_char(char c);
 int	ft_print_percent(char c);

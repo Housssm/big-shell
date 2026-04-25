@@ -2,7 +2,6 @@ SRCS = \
 	Src/Lexer/readline.c\
 	Src/Lexer/line_to_token.c\
 	Src/Lexer/node_creation.c\
-	Src/Lexer/lexer.c\
 	Src/main.c
 
 OBJS = $(SRCS:.c=.o)
