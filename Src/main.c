@@ -126,8 +126,8 @@ int	add_node(t_token **head, char *line, int beg, int end)
 
 int	new_token(char c, int *flag)
 {
-	int		i;
-	char	*array;
+	size_t		i;
+	char		*array;
 
 	array = "|&<> \t";
 	if (*flag != 0)
@@ -189,8 +189,8 @@ int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
 // Tokenise toute la ligne
 int	parse_line(t_token **cmd, char *line)
 {
-	int	i;
-	int	in_quote;
+	size_t	i;
+	int		in_quote;
 
 	i = 0;
 	in_quote = 0;
@@ -200,7 +200,7 @@ int	parse_line(t_token **cmd, char *line)
 			i++;
 		if (!line[i])
 			break ;
-		if (process_token(cmd, line, &i, &in_quote))
+		if (process_token(cmd, line, (int *)&i, &in_quote))
 			return (1);
 		if (line[i] && !in_quote && new_token(line[i], &in_quote))
 		{
