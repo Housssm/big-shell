@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 /*************************** TEMPORAIRE ************************/
-`
+
 void	boucle_str(t_token **head)
 {
 	t_token	*current;
@@ -41,6 +41,14 @@ void	clear_actual_command(t_token **head)
 }
 
 /*************************** TEMPORAIRE ************************/
+
+void	lexer(t_token **cmd, char *line)
+{
+	if (parse_line(cmd, line))
+		return (clear_actual_command(cmd));
+	boucle_str(cmd);
+	clear_actual_command(cmd);
+}
 
 int	main(void)
 {
