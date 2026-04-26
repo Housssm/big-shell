@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 15:32:50 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/26 19:14:43 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,13 @@ int	handle_quote(t_token **cmd, char *line, int *i, int *in_quote)
 	int		start;
 
 	quote_char = line[*i];
-	add_node(cmd, line, *i, *i);
-	(*i)++;
 	start = *i;
+	(*i)++;
 	while (line[*i] && line[*i] != quote_char)
 		(*i)++;
 	if (!line[*i])
 		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
-	add_node(cmd, line, start, *i - 1);
-	add_node(cmd, line, *i, *i);
+	add_node(cmd, line, start, *i);
 	(*i)++;
 	*in_quote = 0;
 	return (0);

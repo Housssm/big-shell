@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:49 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 13:35:50 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/26 19:15:29 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ void	what_is_it(t_token *cmd, char *str)
 	else if (str[0] == '>' && str[1] == '>')
 		define_cmd(cmd, APPOUTREDIR);
 	else if (str[0] == 34)
-		define_cmd(cmd, WEAK_QUOTE);
+		define_cmd(cmd, WORD);
 	else if (str[0] == 39)
-		define_cmd(cmd, STRONG_QUOTE);
+		define_cmd(cmd, WORD);
 	else
 		define_cmd(cmd, WORD);
 }
@@ -63,7 +63,7 @@ t_token	*create_token_from_line(char *line, int beg, int end)
 		return (free(value), NULL);
 	token = malloc(sizeof(t_token));
 	if (!token)
-		return (free(value), ft_printf("Error Malloc node lexer", 2), NULL);
+		return (free(value), ft_putstr_fd("Unclosed quote\n", 2), NULL);
 	token->value = ft_strdup(value);
 	what_is_it(token, token->value);
 	token->next = NULL;

@@ -28,18 +28,15 @@
 
 typedef enum e_type
 {
-	WORD,
 	PIPE,
+	WORD,
 	INREDIR,
 	OUTREDIR,
 	HEREDOC,
 	APPOUTREDIR,
 	MAIN,
 	PROCESS,
-	CHILD,
-	WEAK_QUOTE, //dbl quote certain cas transofrme pas en literal
-	STRONG_QUOTE, //simple quote de facon rigide tranfoirme en litteral
-	NONE_QUOTE, //pas de quote
+	CHI
 }	t_type;
 
 typedef struct s_token
@@ -48,6 +45,44 @@ typedef struct s_token
 	char			*value;
 	struct s_token	*next;
 }	t_token;
+
+typedef enum e_parser_type
+{
+	PIPE_PARS,
+	INREDIR_PARS,
+	OUTREDIR_PARS,
+	HEREDOC_PARS,
+	APPOUTREDIR_PARS,
+
+}	t_pars_type;
+
+typedef struct s_lst_fd
+{
+	char			*file;
+	int				fd;
+	struct s_lst_fd	*previous;
+	struct s_lst_fd	*next;
+}	t_lst_fd;
+
+typedef struct s_tree
+{
+	t_pars_type		parse_type;
+	int				ac;
+	char			**av;
+	struct s_lst_fd	*fds;
+	struct s_tree	*rigtht;
+	struct s_tree	*left;
+}	t_tree;
+/* // typedef struct s_parsing\
+// {
+// 	t_typepars	type;
+// 	int			ac;
+// 	char		**av;
+// 	int			*fd;
+// 	tree 		left;
+// 	tree 		right;
+// }	t_parsing;
+ */
 
 /* structure a envoye pour lecxec:
 	-env
@@ -79,7 +114,7 @@ t_token	*create_token_from_line(char *line, int beg, int end);
 int		add_node(t_token **head, char *line, int beg, int end);
 int		is_blank(char *str);
 int		is_blank(char *str);
-void	lexer(t_token **cmd, char *line);
+// void	lexer(t_tree *tree, char *line);
 
 /*************************** TEMPORAIRE ************************/
 void	boucle_str(t_token **head);
