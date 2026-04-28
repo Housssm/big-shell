@@ -53,6 +53,8 @@ typedef enum e_parser_type
 	OUTREDIR_PARS,
 	HEREDOC_PARS,
 	APPOUTREDIR_PARS,
+	WORD_PARS,
+	WORD_QUOTE_PARS,
 
 }	t_pars_type;
 
@@ -70,7 +72,7 @@ typedef struct s_tree
 	int				ac;
 	char			**av;
 	struct s_lst_fd	*fds;
-	struct s_tree	*rigtht;
+	struct s_tree	*right;
 	struct s_tree	*left;
 }	t_tree;
 /* // typedef struct s_parsing\

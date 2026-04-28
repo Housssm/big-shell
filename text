@@ -1,0 +1,19 @@
+CODE 
+
+/usr/bin/code
+1.117.0
+Codecs Extra Extension	org.freedesktop.Platform.codecs-extra		25.08-extra	system
+
+
+Mozilla
+Mozilla Firefox 149.0.2
+mo answers for flatpack
+
+discord 
+nothing
+
+Name           Application ID             Version       Branch       Installation
+Obsidian       md.obsidian.Obsidian       1.12.7        stable       system
+
+
+Install package 'snapd' to provide command 'snap'? [N/y] n
