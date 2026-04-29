@@ -279,17 +279,6 @@ int	find_pipe(t_tree **tree, t_token **cmd) // trouve le prochain pipe
 	return (0);
 }
 
-
-
-/***********************************************************/
-
-/*Fonction pour le parsing cas des pipes*/
-
-/* fonction qui se balade dans les liste chainee et cherche un pipe tout en comptant;
-fonction qui prends en parametre la tete et recommence det ecrit dans le tree en allant jusquau int
-on dit que la nouvelle tete est la commande qui se trouve juste apres le pipe et on rappele la fonction pour recherche le pipe
- */
-
  int	parser(t_tree *tree, t_token **cmd)
 {
 	if (find_pipe(tree, cmd))
