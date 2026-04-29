@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:58 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 15:33:40 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/29 12:08:51 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ char	*get_line(void)
 
 	line_read = (char *) NULL;
 	line_read = readline("shellinho:~$ ");
+	if (!line_read)
+		return(ft_putstr_fd("shellinho allocation failded",2), NULL);
 	if (line_read && *line_read)
 		add_history(line_read);
 	return (line_read);

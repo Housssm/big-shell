@@ -170,7 +170,7 @@ t_tree	*left_branch(/* t_tree **tree,  */t_token **cmd, size_t count) // commenc
 	left = malloc(sizeof(t_tree));
 	if (!left)
 		return (NULL);
-	left->av = malloc(sizeof(char*) * (count + 1));
+	left->av = malloc(sizeof(char *) * (count + 1));
 	if (!left->av)
 		return (free(left), NULL);
 	left->ac = count;
@@ -182,15 +182,30 @@ t_tree	*left_branch(/* t_tree **tree,  */t_token **cmd, size_t count) // commenc
 		return(free_split(left->av) , free(left) /*, free tout les left(av) precedants  */ ,NULL);
 	return (left);
 }
+void	actualise_cmd(t_token **cmd, size_t count)
+{
+	t_token	*current;
+	size_t	i;
 
+	i = 0;
+	while (i < count + 1)
+	{
+		current = (*cmd)->next;
+		free((*cmd)->value);
+		free((*cmd));
+		*cmd = current;
+		i++;
+	}
+	*cmd = current;
+}
 t_tree	*create_branch_pipe(t_tree **tree, t_token **cmd, size_t count) // creer la branche avec le pipe en son centre, premiere = head sinon elle est a droite du precedant head
 {
 	t_tree	*new_branch;
 
+	new_branch = tree
 	new_branch = malloc(sizeof(t_tree));
 	if (!new_branch)
 		return (NULL);
-	what_is_ptype(*tree, *cmd);
 	new_branch->ac = 1;
 	new_branch->av = malloc(sizeof(char *) * (count + 1));
 	if (!new_branch->av)
@@ -204,31 +219,62 @@ t_tree	*create_branch_pipe(t_tree **tree, t_token **cmd, size_t count) // creer 
 	new_branch->left = left_branch(cmd, count);
 	if (!new_branch->left)
 		return (free_tree(new_branch), NULL);
+	// actualise_cmd(cmd, count);
+	// printf("second\n\n");
+	// boucle_str(cmd);
 	new_branch->right = NULL;
+	// new_branch->right = find_pipe(tree, cmd);
 	// print_tree_line(new_branch);
 	// print_tree(new_branch);
 	free_tree(new_branch);
 	return (0);
 }
 
+int branch_no_pipe(t_tree **tree, t_token **cmd,  size_t count)
+{
+	t_tree *no_pipe;
+
+	no_pipe = malloc(sizeof(t_tree));
+	if (!no_pipe)
+		return (1);
+	no_pipe->parse_type = NO_PIPE;
+	no_pipe->ac = 1;
+	no_pipe->av = malloc(sizeof(char *) * 2);
+	if (!no_pipe->av)
+		return (free(no_pipe), 1);
+	no_pipe->av[0] = ft_strdup("\\");
+	if (!no_pipe->av[0])
+		return (free(no_pipe), free_split(no_pipe->av), 1);
+	no_pipe->av[1] = NULL;
+	no_pipe->fds = 0;
+	no_pipe->right = NULL;
+	no_pipe->left = left_branch(cmd, count);
+	return (0);
+}
 
 int	find_pipe(t_tree **tree, t_token **cmd) // trouve le prochain pipe
 {
 	t_token	*current;
 	size_t	count;
 	
-	(void)tree;
+	// (void)tree;
 	count = 0;
 	current = *cmd;
-	while (current)
+	while (current->next)
 	{
 		if (current->type == PIPE)
 		{
 			if (create_branch_pipe(tree, cmd, count))
 				return (1);
+				//if there is no pipe alors head = NO PIPE et a gauxhe il y a toute la commande 
 		}
 		current = current->next;
 		count += 1;
+		if (current->next == NULL || current->type != PIPE)
+		{
+			if (branch_no_pipe(tree, cmd, count))
+				return (1);
+		}
 	}
 	return (0);
 }
@@ -244,7 +290,7 @@ fonction qui prends en parametre la tete et recommence det ecrit dans le tree en
 on dit que la nouvelle tete est la commande qui se trouve juste apres le pipe et on rappele la fonction pour recherche le pipe
  */
 
- int	parser(t_tree **tree, t_token **cmd)
+ int	parser(t_tree *tree, t_token **cmd)
 {
 	if (find_pipe(tree, cmd))
 		return (1);
@@ -252,7 +298,58 @@ on dit que la nouvelle tete est la commande qui se trouve juste apres le pipe et
 }
 
 
-int	lexer(t_tree **tree, char *line)
+t_tree	*new_pipe(t_tree *tree, t_token *cmd)
+{
+	t_tree	*branch_pipe;
+
+	branch_pipe = malloc(sizeof(t_tree));
+	if (!branch_pipe)
+		return (NULL);
+	branch_pipe->parse_type = PIPE_PARS;
+	branch_pipe->ac = 0;
+	branch_pipe->av = malloc(sizeof(char *) * 2);
+	if (!branch_pipe->av)
+		return (free(branch_pipe), NULL);
+	branch_pipe->av[0] = ft_strdup("|");
+	if (!branch_pipe->av[0])
+		return (free(branch_pipe), free_split(branch_pipe->av), NULL);
+	branch_pipe->av[1] = NULL;
+	branch_pipe->fds = 0;
+	branch_pipe->left = NULL;
+	branch_pipe->right = NULL;
+	return (branch_pipe);
+}
+
+
+int	parser(t_tree *tree, t_token **cmd)
+{
+	size_t	count;
+
+	count = 0;
+	if (!tree)
+		tree = new_pipe(tree, cmd);
+
+	return (0);
+}
+
+/* 
+	creer un node avec le pipe si il ny a rien return null
+	si pas de pipe alors on creer un noeud simple --> cas pas de pipe 
+	si pas de left alrs on le creer
+		si il y a une erreyr alors on return
+	nouvelle head = ce quil y a apres le pipe
+	si droite existe pas et quil y a une pipe 
+		on dit que tree de droite =  new pipe 
+		on rappelle la fonction sur tree->right
+		return
+	dans le cas ou il ny a pas de pipe a droite alors on rempli le noeud de droite simple 
+
+
+
+*/
+
+
+int	lexer(t_tree *tree, char *line)
 {
 	t_token	*cmd;
 
@@ -288,7 +385,7 @@ int	main(void)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		if (lexer(&tree, line))
+		if (lexer(tree, line))
 			return (1);
 		// free_tree(tree);
 		free(line);

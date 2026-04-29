@@ -55,6 +55,7 @@ typedef enum e_parser_type
 	APPOUTREDIR_PARS,
 	WORD_PARS,
 	WORD_QUOTE_PARS,
+	NO_PIPE,
 
 }	t_pars_type;
 
@@ -75,23 +76,7 @@ typedef struct s_tree
 	struct s_tree	*right;
 	struct s_tree	*left;
 }	t_tree;
-/* // typedef struct s_parsing\
-// {
-// 	t_typepars	type;
-// 	int			ac;
-// 	char		**av;
-// 	int			*fd;
-// 	tree 		left;
-// 	tree 		right;
-// }	t_parsing;
- */
 
-/* structure a envoye pour lecxec:
-	-env
-	-token// pas besoin si lexing
-	lexing
-	noeud suidvant
- */
 typedef struct s_parse
 {
 	int	pos_first_quote;
@@ -122,5 +107,9 @@ int		is_blank(char *str);
 void	boucle_str(t_token **head);
 void	clear_actual_command(t_token **head);
 /*************************** TEMPORAIRE ************************/
+
+//Parsing
+int	find_pipe(t_tree **tree, t_token **cmd);
+
 
 #endif

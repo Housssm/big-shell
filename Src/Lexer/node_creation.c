@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:49 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/26 19:15:29 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/29 12:14:38 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ t_token	*create_token_from_line(char *line, int beg, int end)
 	if (!token)
 		return (free(value), ft_putstr_fd("Unclosed quote\n", 2), NULL);
 	token->value = ft_strdup(value);
+	if (!token->value)
+		return (free(value), free(token), NULL);
 	what_is_it(token, token->value);
 	token->next = NULL;
 	free(value);
