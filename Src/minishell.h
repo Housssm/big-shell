@@ -55,7 +55,7 @@ typedef enum e_parser_type
 	APPOUTREDIR_PARS,
 	WORD_PARS,
 	WORD_QUOTE_PARS,
-	NO_PIPE,
+	NO_PIPE_PARS,
 
 }	t_pars_type;
 

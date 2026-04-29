@@ -164,133 +164,154 @@ int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 	return (0);
 }
 
-t_tree	*left_branch(/* t_tree **tree,  */t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
-{
-	t_tree	*left;
-	left = malloc(sizeof(t_tree));
-	if (!left)
-		return (NULL);
-	left->av = malloc(sizeof(char *) * (count + 1));
-	if (!left->av)
-		return (free(left), NULL);
-	left->ac = count;
-	left->fds = 0;
-	left->left = NULL;
-	left->right = NULL;
-	what_is_ptype(left, ((*cmd)));
-	if (value_from_list_to_tree(left, cmd, count))
-		return(free_split(left->av) , free(left) /*, free tout les left(av) precedants  */ ,NULL);
-	return (left);
-}
-void	actualise_cmd(t_token **cmd, size_t count)
-{
-	t_token	*current;
-	size_t	i;
+// t_tree	*left_branch(/* t_tree **tree,  */t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
+// {
+// 	t_tree	*left;
+// 	left = malloc(sizeof(t_tree));
+// 	if (!left)
+// 		return (NULL);
+// 	left->av = malloc(sizeof(char *) * (count + 1));
+// 	if (!left->av)
+// 		return (free(left), NULL);
+// 	left->ac = count;
+// 	left->fds = 0;
+// 	left->left = NULL;
+// 	left->right = NULL;
+// 	what_is_ptype(left, ((*cmd)));
+// 	if (value_from_list_to_tree(left, cmd, count))
+// 		return(free_split(left->av) , free(left) /*, free tout les left(av) precedants  */ ,NULL);
+// 	return (left);
+// }
+// void	actualise_cmd(t_token **cmd, size_t count)
+// {
+// 	t_token	*current;
+// 	size_t	i;
 
-	i = 0;
-	while (i < count + 1)
-	{
-		current = (*cmd)->next;
-		free((*cmd)->value);
-		free((*cmd));
-		*cmd = current;
-		i++;
-	}
-	*cmd = current;
-}
-t_tree	*create_branch_pipe(t_tree **tree, t_token **cmd, size_t count) // creer la branche avec le pipe en son centre, premiere = head sinon elle est a droite du precedant head
-{
-	t_tree	*new_branch;
+// 	i = 0;
+// 	while (i < count + 1)
+// 	{
+// 		current = (*cmd)->next;
+// 		free((*cmd)->value);
+// 		free((*cmd));
+// 		*cmd = current;
+// 		i++;
+// 	}
+// 	*cmd = current;
+// }
+// t_tree	*create_branch_pipe(t_tree **tree, t_token **cmd, size_t count) // creer la branche avec le pipe en son centre, premiere = head sinon elle est a droite du precedant head
+// {
+// 	t_tree	*new_branch;
 
-	new_branch = tree
-	new_branch = malloc(sizeof(t_tree));
-	if (!new_branch)
-		return (NULL);
-	new_branch->ac = 1;
-	new_branch->av = malloc(sizeof(char *) * (count + 1));
-	if (!new_branch->av)
-		return (free_tree(new_branch), NULL);
-	new_branch->av[0] = ft_strdup("|");
-	if (!new_branch->av[0])
-		return (free_tree(new_branch), NULL);
-	new_branch->av[1] = NULL;
-	new_branch->parse_type = PIPE_PARS;
-	new_branch->fds = 0;
-	new_branch->left = left_branch(cmd, count);
-	if (!new_branch->left)
-		return (free_tree(new_branch), NULL);
-	// actualise_cmd(cmd, count);
-	// printf("second\n\n");
-	// boucle_str(cmd);
-	new_branch->right = NULL;
-	// new_branch->right = find_pipe(tree, cmd);
-	// print_tree_line(new_branch);
-	// print_tree(new_branch);
-	free_tree(new_branch);
-	return (0);
-}
+// 	new_branch = tree
+// 	new_branch = malloc(sizeof(t_tree));
+// 	if (!new_branch)
+// 		return (NULL);
+// 	new_branch->ac = 1;
+// 	new_branch->av = malloc(sizeof(char *) * (count + 1));
+// 	if (!new_branch->av)
+// 		return (free_tree(new_branch), NULL);
+// 	new_branch->av[0] = ft_strdup("|");
+// 	if (!new_branch->av[0])
+// 		return (free_tree(new_branch), NULL);
+// 	new_branch->av[1] = NULL;
+// 	new_branch->parse_type = PIPE_PARS;
+// 	new_branch->fds = 0;
+// 	new_branch->left = left_branch(cmd, count);
+// 	if (!new_branch->left)
+// 		return (free_tree(new_branch), NULL);
+// 	// actualise_cmd(cmd, count);
+// 	// printf("second\n\n");
+// 	// boucle_str(cmd);
+// 	new_branch->right = NULL;
+// 	// new_branch->right = find_pipe(tree, cmd);
+// 	// print_tree_line(new_branch);
+// 	// print_tree(new_branch);
+// 	free_tree(new_branch);
+// 	return (0);
+// }
 
-int branch_no_pipe(t_tree **tree, t_token **cmd,  size_t count)
-{
-	t_tree *no_pipe;
+// int branch_no_pipe(t_tree **tree, t_token **cmd,  size_t count)
+// {
+// 	t_tree *no_pipe;
 
-	no_pipe = malloc(sizeof(t_tree));
-	if (!no_pipe)
-		return (1);
-	no_pipe->parse_type = NO_PIPE;
-	no_pipe->ac = 1;
-	no_pipe->av = malloc(sizeof(char *) * 2);
-	if (!no_pipe->av)
-		return (free(no_pipe), 1);
-	no_pipe->av[0] = ft_strdup("\\");
-	if (!no_pipe->av[0])
-		return (free(no_pipe), free_split(no_pipe->av), 1);
-	no_pipe->av[1] = NULL;
-	no_pipe->fds = 0;
-	no_pipe->right = NULL;
-	no_pipe->left = left_branch(cmd, count);
-	return (0);
-}
+// 	no_pipe = malloc(sizeof(t_tree));
+// 	if (!no_pipe)
+// 		return (1);
+// 	no_pipe->parse_type = NO_PIPE;
+// 	no_pipe->ac = 1;
+// 	no_pipe->av = malloc(sizeof(char *) * 2);
+// 	if (!no_pipe->av)
+// 		return (free(no_pipe), 1);
+// 	no_pipe->av[0] = ft_strdup("\\");
+// 	if (!no_pipe->av[0])
+// 		return (free(no_pipe), free_split(no_pipe->av), 1);
+// 	no_pipe->av[1] = NULL;
+// 	no_pipe->fds = 0;
+// 	no_pipe->right = NULL;
+// 	no_pipe->left = left_branch(cmd, count);
+// 	return (0);
+// }
 
-int	find_pipe(t_tree **tree, t_token **cmd) // trouve le prochain pipe
-{
-	t_token	*current;
-	size_t	count;
+// int	find_pipe(t_tree **tree, t_token **cmd) // trouve le prochain pipe
+// {
+// 	t_token	*current;
+// 	size_t	count;
 	
-	// (void)tree;
+// 	// (void)tree;
+// 	count = 0;
+// 	current = *cmd;
+// 	while (current->next)
+// 	{
+// 		if (current->type == PIPE)
+// 		{
+// 			if (create_branch_pipe(tree, cmd, count))
+// 				return (1);
+// 				//if there is no pipe alors head = NO PIPE et a gauxhe il y a toute la commande 
+// 		}
+// 		current = current->next;
+// 		count += 1;
+// 		if (current->next == NULL || current->type != PIPE)
+// 		{
+// 			if (branch_no_pipe(tree, cmd, count))
+// 				return (1);
+// 		}
+// 	}
+// 	return (0);
+// }
+
+//  int	parser(t_tree *tree, t_token **cmd)
+// {
+// 	if (find_pipe(tree, cmd))
+// 		return (1);
+// 	return (0);
+// }
+
+
+bool	search_pipe(t_token **cmd, size_t *count)
+{
+	t_token	*current;
+	
 	count = 0;
 	current = *cmd;
 	while (current->next)
 	{
 		if (current->type == PIPE)
-		{
-			if (create_branch_pipe(tree, cmd, count))
-				return (1);
-				//if there is no pipe alors head = NO PIPE et a gauxhe il y a toute la commande 
-		}
+			return (true);
 		current = current->next;
 		count += 1;
-		if (current->next == NULL || current->type != PIPE)
-		{
-			if (branch_no_pipe(tree, cmd, count))
-				return (1);
-		}
 	}
-	return (0);
-}
-
- int	parser(t_tree *tree, t_token **cmd)
-{
-	if (find_pipe(tree, cmd))
-		return (1);
-	return (0);
+	if (current->type == PIPE)
+		return (ft_putstr_fd("Invalid command\n",1), false);
+	return (false);
 }
 
 
-t_tree	*new_pipe(t_tree *tree, t_token *cmd)
+t_tree	*new_pipe(t_token **cmd, size_t *count)
 {
 	t_tree	*branch_pipe;
 
+	if (search_pipe(cmd, count) == false)
+		return (NULL);
 	branch_pipe = malloc(sizeof(t_tree));
 	if (!branch_pipe)
 		return (NULL);
@@ -309,6 +330,24 @@ t_tree	*new_pipe(t_tree *tree, t_token *cmd)
 	return (branch_pipe);
 }
 
+t_tree	*no_pipe_tree(t_token **cmd, size_t count)
+{
+	t_tree	*branch_pipe;
+
+	branch_pipe = malloc(sizeof(t_tree));
+	if (!branch_pipe)
+		return (NULL);
+	branch_pipe->parse_type = NO_PIPE_PARS;
+	branch_pipe->ac = count;
+	branch_pipe->av = malloc(sizeof(char *) * count + 1);
+	if (!branch_pipe->av)
+		return (free(branch_pipe), NULL);
+	value_from_list_to_tree(branch_pipe, cmd, count);
+	branch_pipe->fds = 0; //fonction pour calculer les fds
+	branch_pipe->left = NULL;
+	branch_pipe->right = NULL;
+	return (branch_pipe);
+}
 
 int	parser(t_tree *tree, t_token **cmd)
 {
@@ -316,8 +355,10 @@ int	parser(t_tree *tree, t_token **cmd)
 
 	count = 0;
 	if (!tree)
-		tree = new_pipe(tree, cmd);
-
+		tree = new_pipe(cmd, &count);
+	if (!tree)
+		tree = no_pipe_tree(cmd, count);
+	print_tree(tree);
 	return (0);
 }
 
@@ -332,9 +373,6 @@ int	parser(t_tree *tree, t_token **cmd)
 		on rappelle la fonction sur tree->right
 		return
 	dans le cas ou il ny a pas de pipe a droite alors on rempli le noeud de droite simple 
-
-
-
 */
 
 
