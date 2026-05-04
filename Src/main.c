@@ -25,63 +25,96 @@ void	boucle_str(t_token **head)
 		current = current->next;
 	}
 }
-void print_tree_line(t_tree *tree)
+
+static void	print_node_type(t_pars_type type)
 {
-	if (!tree)
-	{
-		printf("tree = NULL\n");
-		return;
-	}
-	printf("--------------BRANCH-----------------------\n");
-
-	// Ligne 1: Type
-	printf("	type = ");
-	switch (tree->parse_type)
-	{
-		case PIPE_PARS:			printf("PIPE_PARS"); break;
-		case INREDIR_PARS:		printf("INREDIR_PARS"); break;
-		case OUTREDIR_PARS:		printf("OUTREDIR_PARS"); break;
-		case HEREDOC_PARS:		printf("HEREDOC_PARS"); break;
-		case APPOUTREDIR_PARS:	printf("APPOUTREDIR_PARS"); break;
-		case WORD_PARS:			printf("WORD_PARS"); break;
-		case WORD_QUOTE_PARS:	printf("WORD_QUOTE_PARS"); break;
-		default:				printf("UNKNOWN");
-	}
-	printf("\n");
-	
-	// Ligne 2: ac
-	printf("	ac = %d\n", tree->ac);
-	
-	// Ligne 3: av
-	printf("	av = [");
-	if (tree->av && tree->ac > 0)
-	{
-		for (int i = 0; i < tree->ac; i++)
-		{
-			if (tree->av[i])
-				printf("[%s]", tree->av[i]);
-			else
-				printf("[NULL]");
-			if (i < tree->ac - 1)
-				printf(" ");
-		}
-	}
-	else
-		printf("NULL");
-	printf("]\n");
-	
-	// Ligne 4: fds
-	printf("	fds = %s\n", (tree->fds != NULL) ? "oui" : "NULL");
-	
-	// Ligne 5: right
-	printf("	right = %s\n", (tree->right != NULL) ? "non NULL" : "NULL");
-	
-	// Ligne 6: left
-	printf("	left = %s\n", (tree->left != NULL) ? "non NULL" : "NULL");
-
-	printf("-------------------------------------------\n");
-
+    switch (type)
+    {
+        case PIPE_PARS:			printf("PIPE_PARS\n"); break;
+        case NO_PIPE_PARS:		printf("NO_PIPE_PARS\n"); break;
+        case INREDIR_PARS:		printf("INREDIR_PARS\n"); break;
+        case OUTREDIR_PARS:		printf("OUTREDIR_PARS\n"); break;
+        case HEREDOC_PARS:		printf("HEREDOC_PARS\n"); break;
+        case APPOUTREDIR_PARS:	printf("APPOUTREDIR_PARS\n"); break;
+        case WORD_PARS:			printf("WORD_PARS\n"); break;
+        case WORD_QUOTE_PARS:	printf("WORD_QUOTE_PARS\n"); break;
+        default:				printf("UNKNOWN\n");
+    }
 }
+
+static void	print_tree_argv(t_tree *tree)
+{
+    if (!tree->av || tree->ac == 0)
+    {
+        printf("NULL\n");
+        return;
+    }
+    printf("[");
+    for (int i = 0; i < tree->ac; i++)
+    {
+        if (tree->av[i])
+            printf("[%s]", tree->av[i]);
+    }
+    printf("]\n");
+}
+
+static void	print_tree_recursive(t_tree *tree, char *prefix)
+{
+    char left_pfx[1024];
+    char right_pfx[1024];
+    char child_pfx[1024];
+
+    ft_strlcpy(child_pfx, prefix, sizeof(child_pfx));
+    ft_strlcat(child_pfx, "│    ", sizeof(child_pfx));
+
+    // Type
+    printf("%s└─── type: ", prefix);
+    print_node_type(tree->parse_type);
+
+    // Argc
+    printf("%s     ├─── argc: %d\n", prefix, tree->ac);
+
+    // Argv
+    printf("%s     ├─── argv: ", prefix);
+    print_tree_argv(tree);
+
+    // fds
+    printf("%s     ├─── fds\n%s     │    └─── %s\n", prefix, prefix, tree->fds ? "YES" : "NULL");
+
+    // subshell
+    printf("%s     ├─── subshell\n%s     │    └─── NULL\n", prefix, prefix); // Fixe à NULL pour l'instant
+
+    // left
+    printf("%s     ├─── left\n", prefix);
+    ft_strlcpy(left_pfx, prefix, sizeof(left_pfx));
+    ft_strlcat(left_pfx, "     │    ", sizeof(left_pfx));
+    if (tree->left)
+        print_tree_recursive(tree->left, left_pfx);
+    else
+        printf("%s└─── NULL\n", left_pfx);
+
+    // right (le dernier élément a un `└─── right` au lieu de `├───`)
+    printf("%s     └─── right\n", prefix);
+    ft_strlcpy(right_pfx, prefix, sizeof(right_pfx));
+    ft_strlcat(right_pfx, "          ", sizeof(right_pfx));
+    if (tree->right)
+        print_tree_recursive(tree->right, right_pfx);
+    else
+        printf("%s└─── NULL\n", right_pfx);
+}
+
+void	print_tree(t_tree *tree)
+{
+    printf("├─── parsing\n");
+    if (tree)
+        print_tree_recursive(tree, "│    ");
+    else
+        printf("│    └─── NULL\n");
+
+    // Pseudo bloc d'erreur demandé
+    printf("└─── error\n     ├─── code: MINICODE_NONE\n     └─── msg: [No error.]\n");
+}
+
 /*************************** TEMPORAIRE ************************/
 
 
@@ -111,21 +144,6 @@ void free_tree(t_tree *tree)
 		free(tree);
 }
 
-void	print_tree(t_tree *tree)
-{
-	printf("Head : \n");
-	print_tree_line(tree);
-	if (tree->left != NULL)
-	{
-		printf("Left : \n");
-		print_tree_line(tree->left);
-	}
-	if (tree->right != NULL)
-	{
-		printf("Right : \n");
-		print_tree_line(tree->right);
-	}
-}
 
 void	what_is_ptype(t_tree *tree, t_token *cmd)
 {
@@ -164,6 +182,7 @@ int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 	return (0);
 }
 
+
 t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
 {
 	t_tree	*left;
@@ -183,112 +202,6 @@ t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count) // commence depui
 	return (left);
 }
 
-
-// void	actualise_cmd(t_token **cmd, size_t count)
-// {
-// 	t_token	*current;
-// 	size_t	i;
-
-// 	i = 0;
-// 	while (i < count + 1)
-// 	{
-// 		current = (*cmd)->next;
-// 		free((*cmd)->value);
-// 		free((*cmd));
-// 		*cmd = current;
-// 		i++;
-// 	}
-// 	*cmd = current;
-// }
-// t_tree	*create_branch_pipe(t_tree **tree, t_token **cmd, size_t count) // creer la branche avec le pipe en son centre, premiere = head sinon elle est a droite du precedant head
-// {
-// 	t_tree	*new_branch;
-
-// 	new_branch = tree
-// 	new_branch = malloc(sizeof(t_tree));
-// 	if (!new_branch)
-// 		return (NULL);
-// 	new_branch->ac = 1;
-// 	new_branch->av = malloc(sizeof(char *) * (count + 1));
-// 	if (!new_branch->av)
-// 		return (free_tree(new_branch), NULL);
-// 	new_branch->av[0] = ft_strdup("|");
-// 	if (!new_branch->av[0])
-// 		return (free_tree(new_branch), NULL);
-// 	new_branch->av[1] = NULL;
-// 	new_branch->parse_type = PIPE_PARS;
-// 	new_branch->fds = 0;
-// 	new_branch->left = left_branch(cmd, count);
-// 	if (!new_branch->left)
-// 		return (free_tree(new_branch), NULL);
-// 	// actualise_cmd(cmd, count);
-// 	// printf("second\n\n");
-// 	// boucle_str(cmd);
-// 	new_branch->right = NULL;
-// 	// new_branch->right = find_pipe(tree, cmd);
-// 	// print_tree_line(new_branch);
-// 	// print_tree(new_branch);
-// 	free_tree(new_branch);
-// 	return (0);
-// }
-
-// int branch_no_pipe(t_tree **tree, t_token **cmd,  size_t count)
-// {
-// 	t_tree *no_pipe;
-
-// 	no_pipe = malloc(sizeof(t_tree));
-// 	if (!no_pipe)
-// 		return (1);
-// 	no_pipe->parse_type = NO_PIPE;
-// 	no_pipe->ac = 1;
-// 	no_pipe->av = malloc(sizeof(char *) * 2);
-// 	if (!no_pipe->av)
-// 		return (free(no_pipe), 1);
-// 	no_pipe->av[0] = ft_strdup("\\");
-// 	if (!no_pipe->av[0])
-// 		return (free(no_pipe), free_split(no_pipe->av), 1);
-// 	no_pipe->av[1] = NULL;
-// 	no_pipe->fds = 0;
-// 	no_pipe->right = NULL;
-// 	no_pipe->left = left_branch(cmd, count);
-// 	return (0);
-// }
-
-// int	find_pipe(t_tree **tree, t_token **cmd) // trouve le prochain pipe
-// {
-// 	t_token	*current;
-// 	size_t	count;
-	
-// 	// (void)tree;
-// 	count = 0;
-// 	current = *cmd;
-// 	while (current->next)
-// 	{
-// 		if (current->type == PIPE)
-// 		{
-// 			if (create_branch_pipe(tree, cmd, count))
-// 				return (1);
-// 				//if there is no pipe alors head = NO PIPE et a gauxhe il y a toute la commande 
-// 		}
-// 		current = current->next;
-// 		count += 1;
-// 		if (current->next == NULL || current->type != PIPE)
-// 		{
-// 			if (branch_no_pipe(tree, cmd, count))
-// 				return (1);
-// 		}
-// 	}
-// 	return (0);
-// }
-
-//  int	parser(t_tree *tree, t_token **cmd)
-// {
-// 	if (find_pipe(tree, cmd))
-// 		return (1);
-// 	return (0);
-// }
-
-
 bool	search_pipe(t_token **cmd, size_t *count)
 {
 	t_token	*current;
@@ -306,7 +219,6 @@ bool	search_pipe(t_token **cmd, size_t *count)
 		return (ft_putstr_fd("Invalid command\n",1), false);
 	return (false);
 }
-
 
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count)
 {
@@ -352,10 +264,25 @@ t_tree	*no_pipe_tree(t_tree *tree , t_token **cmd, size_t *count)
 	return (branch_pipe);
 }
 
+t_token	*new_head_actualisation(t_token **head, size_t count)
+{
+	t_token	*new_head;
+	size_t	i;
+
+	i = 0;
+	new_head = *head;
+	while (i < count)
+	{
+		new_head = new_head->next;
+		i++;
+	}
+	return (new_head->next);
+}
+
 int	parser(t_tree **tree, t_token **cmd)
 {
 	size_t	count;
-	// t_token	*new_head;
+	t_token	*new_head;
 
 	count = 0;
 	if (!*tree)
@@ -369,27 +296,17 @@ int	parser(t_tree **tree, t_token **cmd)
 	}
 	if (!(*tree)->left)
 		(*tree)->left= left_branch(*tree, cmd, count);
-	// if (!tree->left)
-	// 	return (free_tree(tree), 1);
-	// new_head = (*cmd)->next;
-	// if (!tree->right)
-	// parser(tree->right, &new_head);
-	print_tree(*tree);
+	if (!(*tree)->left)
+		return (free_tree(*tree), 1);
+	new_head = new_head_actualisation(cmd, count);
+	if (new_head && !(*tree)->right)
+	{
+		if (parser(&(*tree)->right, &new_head))
+			return (free_tree(*tree), 1);
+	}
 	return (0);
 }
 
-/* 
-	creer un node avec le pipe si il ny a rien return null
-	si pas de pipe alors on creer un noeud simple --> cas pas de pipe 
-	si pas de left alrs on le creer
-		si il y a une erreyr alors on return
-	nouvelle head = ce quil y a apres le pipe
-	si droite existe pas et quil y a une pipe 
-		on dit que tree de droite =  new pipe 
-		on rappelle la fonction sur tree->right
-		return
-	dans le cas ou il ny a pas de pipe a droite alors on rempli le noeud de droite simple 
-*/
 
 
 int	lexer(t_tree **tree, char *line)
@@ -407,6 +324,7 @@ int	lexer(t_tree **tree, char *line)
 	if (parser(tree, &cmd))
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
+	print_tree(*tree);
 	free_tree(*tree);
 	*tree = NULL;
 	return (0);
