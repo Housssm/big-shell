@@ -1,33 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mtodzzi <mtodzzi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/28 13:44:48 by mtodzzi           #+#    #+#             */
-/*   Updated: 2026/04/28 13:44:48 by mtodzzi          ###   ########.fr       */
+/*   Created: 2026/04/29 16:02:19 by mtodzzi           #+#    #+#             */
+/*   Updated: 2026/04/29 16:02:19 by mtodzzi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "libft.h"
 
-int ft_pwd(void)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-    char    cwd[PATH_MAX];
+	int	i;
 
-    while (!getcwd(cwd, PATH_MAX))
-    {
-        ft_printf("pwd: error retrieving current directory\n");
-        return (1);
-    }
-    ft_printf("%s\n", cwd);
-    return (0);
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
-
-/*
-int main(int ac, char **av)
-{
-    ft_pwd();
-    return (0);
-}*/

@@ -10,33 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
+#include "../minishell.h"
 
-void    ft_putchar(char c)
-{
-    write(1, &c, 1);
-}
-
-void    ft_putstr(char *str)
+static int  is_flag(char *str)
 {
     int i;
 
-    i = 0;
-    while(str[i])
-    {
-        ft_putchar(str[i]);
-        i++;
-    }
-}
-
-int is_flag(char *str)
-{
-    int i;
-
-    i = 0;
+    i = 1;
     if (str[0] != '-')
         return (0);
     while (str[i])
@@ -47,12 +27,13 @@ int is_flag(char *str)
     }
     return (i > 1);
 }
+
 int    ft_echo(char **av)
 {
     int i;
     int newline;
 
-    i = 1;
+    i = 2;
     newline = 1;
     if (av[i] && is_flag(av[i]))
     {
@@ -61,18 +42,18 @@ int    ft_echo(char **av)
     }
     while (av[i])
     {
-        ft_putstr(av[i]);
+        ft_printf("%s", av[i]);
         if (av[i + 1])
-            ft_putchar(' ');
+            ft_printf(" ");
         i++;
     }
     if (newline)
-        ft_putchar('\n');
+        ft_printf("\n");
     return (0);
 }
-
+/*
 int main(int ac, char **av)
 {
     ft_echo(av);
     return (0);
-}
+}*/

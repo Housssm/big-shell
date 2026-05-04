@@ -10,10 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
+#include "../minishell.h"
 
 static int    is_valid_key(char *str)
 {
@@ -35,16 +32,11 @@ static void    print_export(t_env *env)
 {
     while (env)
     {
-        ft_putstr("declare -x ");
-        ft_putstr(env->key);
+        ft_printf("declare -x ");
+        ft_printf("%s", env->key);
         if (env->value)
-        {
-            ft_putchar('=');
-            ft_putchar('"');
-            ft_putstr(env->value);
-            ft_putchar('"');
-        }
-        ft_putchar('\n');
+            ft_printf("=\"%s\"", env->value);
+        ft_printf("\n");
         env = env->next;
     }
 }
@@ -56,19 +48,17 @@ int    ft_export(char **av, t_env **env)
     char    *key;
     char    *value;
 
-    if (!av[1])
+    if (!av[0])
     {
         print_export(*env);
         return (0);
     }
-    i = 1;
+    i = 0;
     while (av[i])
     {
         if (!is_valid_key(av[i]))
         {
-            ft_putstr("export: not a valid identifier: ");
-            ft_putstr(av[i]);
-            ft_putchar('\n');
+            ft_printf("export: not a valid identifier: %s\n", av[i]);
             i++;
             continue ;
         }

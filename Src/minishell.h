@@ -23,6 +23,9 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <stdbool.h>
+# include <limits.h>
+# include <unistd.h>
+# include <string.h>
 
 # include "../Libft/libft/libft.h"
 
@@ -61,9 +64,25 @@ typedef struct s_parse
 	int	pos_sec_quote;
 }	t_parse;
 
+typedef struct s_env
+{
+    char    *key;   /* PATH */
+    char    *value;   /* /usr/bin:/bin */
+    struct s_env *next;
+}   t_env;
+/* //02/05/2026
+typedef struct s_tree
+{
+	t_typepars    type;
+	int            ac;
+	char        **av;
+	int            *fd;
+	tree         left;
+	tree         right;
+}
 extern volatile sig_atomic_t	g_signal_received;
 // var dt valeur pt etre mod en dehors progr -> assure portabilite general
-
+*/  //02/05/2026
 // Lexer
 char	*get_line(void);
 void	handler(int sigtype);
@@ -85,5 +104,14 @@ void	lexer(t_token **cmd, char *line);
 void	boucle_str(t_token **head);
 void	clear_actual_command(t_token **head);
 /*************************** TEMPORAIRE ************************/
+
+/* BUILTINS */
+int update_env(t_env **env, char *key, char *value);
+t_env   *init_env(char **envp);
+int    ft_cd(char **av, t_env **env);
+int    ft_echo(char **av);
+int    ft_export(char **av, t_env **env);
+int ft_pwd(void);
+
 
 #endif

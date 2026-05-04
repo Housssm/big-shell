@@ -1,33 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mtodzzi <mtodzzi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/28 13:44:48 by mtodzzi           #+#    #+#             */
-/*   Updated: 2026/04/28 13:44:48 by mtodzzi          ###   ########.fr       */
+/*   Created: 2026/04/29 16:05:15 by mtodzzi           #+#    #+#             */
+/*   Updated: 2026/04/29 16:05:15 by mtodzzi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "libft.h"
 
-int ft_pwd(void)
+char	*ft_strndup(const char *s, size_t n)
 {
-    char    cwd[PATH_MAX];
+	size_t	i;
+	char	*dup;
 
-    while (!getcwd(cwd, PATH_MAX))
-    {
-        ft_printf("pwd: error retrieving current directory\n");
-        return (1);
-    }
-    ft_printf("%s\n", cwd);
-    return (0);
+	i = 0;
+	while (s[i] && i < n)
+		i++;
+	dup = malloc(sizeof(char) * (i + 1));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (s[i] && i < n)
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
 }
-
-/*
-int main(int ac, char **av)
-{
-    ft_pwd();
-    return (0);
-}*/

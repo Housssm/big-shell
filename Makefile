@@ -2,6 +2,10 @@ SRCS = \
 	Src/Lexer/readline.c\
 	Src/Lexer/line_to_token.c\
 	Src/Lexer/node_creation.c\
+	Src/builtins/builtin_cd.c\
+	Src/builtins/builtin_echo.c\
+	Src/builtins/builtin_export.c\
+	Src/builtins/builtin_pwd.c\
 	Src/main.c
 
 OBJS = $(SRCS:.c=.o)

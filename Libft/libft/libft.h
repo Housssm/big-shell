@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mtodzzi <mtodzzi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 12:53:03 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/25 15:37:04 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/04/29 16:04:37 by mtodzzi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,7 @@ void	ft_putnbr_fd(int n, int fd);
 int		ft_countwords(char *str, char c);
 void	free_split(char **tab);
 int		ft_countwords(char *str, char c);
+int	ft_strcmp(const char *s1, const char *s2);
+char	*ft_strndup(const char *s, size_t n);
 
 #endif
