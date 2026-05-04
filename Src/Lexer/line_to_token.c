@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/04/29 12:27:16 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/04 14:45:09 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	handle_quote(t_token **cmd, char *line, int *i, int *in_quote)
 	while (line[*i] && line[*i] != quote_char)
 		(*i)++;
 	if (!line[*i])
-		return (ft_putstr_fd("Unclosed quote\n", 2), 1);
+		return (ft_putstr_fd("Unclosed quote\n", 1), 2);
 	add_node(cmd, line, start, *i);
 	(*i)++;
 	*in_quote = 0;
@@ -79,6 +79,7 @@ int	parse_line(t_token **cmd, char *line)
 {
 	size_t	i;
 	int		in_quote;
+	int		ret_process;
 
 	i = 0;
 	in_quote = 0;
@@ -88,7 +89,10 @@ int	parse_line(t_token **cmd, char *line)
 			i++;
 		if (!line[i])
 			break ;
-		if (process_token(cmd, line, (int *)&i, &in_quote))
+		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
+		if (ret_process == 2)
+			return (2);
+		if (ret_process)
 			return (1);
 		if (line[i] && !in_quote && new_token(line[i], &in_quote))
 		{

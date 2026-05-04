@@ -106,10 +106,9 @@ void free_tree(t_tree *tree)
 	free_tree(tree->left);
 	free_tree(tree->right);    
 	if (tree->av)
-	{
 		free_split(tree->av);
-	}
-	free(tree);
+	if (tree)
+		free(tree);
 }
 
 void	print_tree(t_tree *tree)
@@ -142,44 +141,45 @@ void	what_is_ptype(t_tree *tree, t_token *cmd)
 		tree->parse_type = APPOUTREDIR_PARS;
 	else if (cmd->type == WORD && (cmd->value[0] == 34 || cmd->value[0] == 39))
 		tree->parse_type = WORD_QUOTE_PARS;
+	else
+		tree->parse_type = WORD_PARS;
 }
 
 int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 {
-	t_token	*token;
 	size_t	i;
-		
+	t_token	*current;
+
 	i = 0;
-	token = (*cmd);
+	current = *cmd;
 	while (i < count)
 	{
-		branch->av[i] = ft_strdup(token->value);
+		branch->av[i] = ft_strdup(current->value);
 		if (!branch->av[i])
 			return (free_split(branch->av) , 1);
-		token = token->next;
+		current = current->next;
 		i++;
 	}
-
 	branch->av[i] = NULL;
 	return (0);
 }
 
-t_tree	*left_branch(/* t_tree **tree,  */t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
+t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
 {
 	t_tree	*left;
 	left = malloc(sizeof(t_tree));
 	if (!left)
-		return (NULL);
+		return (free_tree(tree), NULL);
 	left->av = malloc(sizeof(char *) * (count + 1));
 	if (!left->av)
-		return (free(left), NULL);
+		return (free(left), free_tree(tree), NULL);
 	left->ac = count;
 	left->fds = 0;
 	left->left = NULL;
 	left->right = NULL;
 	what_is_ptype(left, ((*cmd)));
 	if (value_from_list_to_tree(left, cmd, count))
-		return(free_split(left->av) , free(left) /*, free tout les left(av) precedants  */ ,NULL);
+		return(free_split(left->av) , free(left), free_tree(tree), NULL);
 	return (left);
 }
 
@@ -308,7 +308,7 @@ bool	search_pipe(t_token **cmd, size_t *count)
 }
 
 
-t_tree	*new_pipe(t_token **cmd, size_t *count)
+t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count)
 {
 	t_tree	*branch_pipe;
 
@@ -316,15 +316,15 @@ t_tree	*new_pipe(t_token **cmd, size_t *count)
 		return (NULL);
 	branch_pipe = malloc(sizeof(t_tree));
 	if (!branch_pipe)
-		return (NULL);
+		return (free_tree(tree), free_tree(tree), NULL);
 	branch_pipe->parse_type = PIPE_PARS;
 	branch_pipe->ac = 0;
 	branch_pipe->av = malloc(sizeof(char *) * 2);
 	if (!branch_pipe->av)
-		return (free(branch_pipe), NULL);
+		return (free(branch_pipe), free_tree(tree), NULL);
 	branch_pipe->av[0] = ft_strdup("|");
 	if (!branch_pipe->av[0])
-		return (free_split(branch_pipe->av), free(branch_pipe), NULL);
+		return (free_split(branch_pipe->av), free(branch_pipe), free_tree(tree), NULL);
 	branch_pipe->av[1] = NULL;
 	branch_pipe->fds = 0;
 	branch_pipe->left = NULL;
@@ -332,44 +332,49 @@ t_tree	*new_pipe(t_token **cmd, size_t *count)
 	return (branch_pipe);
 }
 
-t_tree	*no_pipe_tree(t_token **cmd, size_t *count)
+t_tree	*no_pipe_tree(t_tree *tree , t_token **cmd, size_t *count)
 {
 	t_tree	*branch_pipe;
+
 	branch_pipe = malloc(sizeof(t_tree));
 	if (!branch_pipe)
-		return (NULL);
-	search_pipe(cmd, count);
+		return (ft_putstr_fd("Error malloc\n", 2), NULL);
 	branch_pipe->parse_type = NO_PIPE_PARS;
 	branch_pipe->ac = *count;
 	branch_pipe->av = malloc(sizeof(char *) * (*count + 1));
 	if (!branch_pipe->av)
-		return (free(branch_pipe), NULL);
-	value_from_list_to_tree(branch_pipe, cmd, *count);
+		return (free(branch_pipe), free_tree(tree), NULL);
+	if (value_from_list_to_tree(branch_pipe, cmd, *count))
+		return (free_split(branch_pipe->av), free(branch_pipe), NULL);
 	branch_pipe->fds = 0; //fonction pour calculer les fds
 	branch_pipe->left = NULL;
 	branch_pipe->right = NULL;
 	return (branch_pipe);
 }
 
-int	parser(t_tree *tree, t_token **cmd)
+int	parser(t_tree **tree, t_token **cmd)
 {
 	size_t	count;
 	// t_token	*new_head;
 
 	count = 0;
-	if (!tree)
-		tree = new_pipe(cmd, &count);
-	if (!tree)
-		tree = no_pipe_tree(cmd, &count);
-	if (!tree->left)
-		tree->left= left_branch(cmd, count);
-	if (!tree->left)
-		return (free_tree(tree), 1);
-	printf("value next node: %s\n", (*cmd)->next->value);
+	if (!*tree)
+		*tree = new_pipe(*tree, cmd, &count);
+	if (!*tree)
+	{
+		*tree = no_pipe_tree(*tree, cmd, &count);
+		if (!*tree)
+			return (free_tree(*tree), 1);
+		return(0);
+	}
+	if (!(*tree)->left)
+		(*tree)->left= left_branch(*tree, cmd, count);
+	// if (!tree->left)
+	// 	return (free_tree(tree), 1);
 	// new_head = (*cmd)->next;
 	// if (!tree->right)
 	// parser(tree->right, &new_head);
-	print_tree(tree);
+	print_tree(*tree);
 	return (0);
 }
 
@@ -387,29 +392,36 @@ int	parser(t_tree *tree, t_token **cmd)
 */
 
 
-int	lexer(t_tree *tree, char *line)
+int	lexer(t_tree **tree, char *line)
 {
 	t_token	*cmd;
+	int		return_pars_line;
 
 	cmd = NULL;
-	if (parse_line(&cmd, line))
+	return_pars_line = parse_line(&cmd, line);
+	if (return_pars_line == 2)
+		return (clear_actual_command(&cmd), free_tree(*tree), 0);
+	if (return_pars_line != 0)
 		return (clear_actual_command(&cmd), 1);
 	// boucle_str(&cmd);
 	if (parser(tree, &cmd))
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
+	free_tree(*tree);
+	*tree = NULL;
 	return (0);
 }
 
-int	main(void)
+int	main(int ac, char **av, char **env)
 {
 	char				*line;
 	struct sigaction	action;
-	// t_token				*cmd;
 	t_tree				*tree;
 
+	(void)ac;
+	(void)av;
+	(void)env;
 	ft_memset(&action, 0, sizeof(action));
-	// cmd = NULL;
 	tree = NULL;
 	action.sa_handler = handler;
 	while (1)
@@ -423,9 +435,12 @@ int	main(void)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		if (lexer(tree, line))
+		if (lexer(&tree, line))
+		{	
+			free(line);
+			free_tree(tree);
 			return (1);
-		// free_tree(tree);
+		}
 		free(line);
 	}
 	return (0);

@@ -75,6 +75,7 @@ typedef struct s_tree
 	struct s_lst_fd	*fds;
 	struct s_tree	*right;
 	struct s_tree	*left;
+	int				error;
 }	t_tree;
 
 typedef struct s_parse
