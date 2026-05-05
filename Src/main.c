@@ -163,6 +163,25 @@ void	what_is_ptype(t_tree *tree, t_token *cmd)
 		tree->parse_type = WORD_PARS;
 }
 
+int	double_quote_management(t_tree *branch, t_token **cmd, t_token *current, size_t *i)
+{
+	if (current->type == WORD && current->next->type == SPACE && current->next->next->type == DOUBLE)
+	{
+		printf("TEST\n");
+		branch->av[i] = ft_stthreejoin(current->value, current->next->value, current->next->next->value);
+		if (!branch->av[i])
+			return (free_split(branch->av) , 1);
+		current = current->next->next->next;
+		i = i +3;
+	}
+	if (current->type == WORD && current->next->type == SPACE)
+	{
+		
+	}
+	return (0);
+}
+
+
 int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 {
 	size_t	i;
@@ -172,6 +191,8 @@ int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 	current = *cmd;
 	while (i < count && current)
 	{
+		if (double_quote_management(branch, cmd, current, &i))
+			return (1);
 		branch->av[i] = ft_strdup(current->value);
 		if (!branch->av[i])
 			return (free_split(branch->av) , 1);

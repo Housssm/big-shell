@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:58 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/05 16:31:42 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/05 17:28:30 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,17 @@ int	is_blank(char *str)
 	return (0);
 }
 
-int	ft_tokennb(t_token *cmd)
-{
-	int	i;
+// int	ft_tokennb(t_token *cmd)
+// {
+// 	int	i;
 
-	i = 0;
-	if (cmd == NULL)
-		return (0);
-	else
-	{
-		i = i + 1;
-		return (i + ft_tokennb(cmd -> next));
-	}
-}
+// 	i = 0;
+// 	if (cmd == NULL)
+// 		return (0);
+// 	else
+// 	{
+// 		i = i + 1;
+// 		return (i + ft_tokennb(cmd -> next));
+// 	}
+// }
 

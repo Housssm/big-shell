@@ -36,6 +36,8 @@ typedef enum e_type
 	APPOUTREDIR,
 	DOUBLE,
 	SIMPLE,
+	ESPACE,
+
 }	t_type;
 
 typedef struct s_token
@@ -113,6 +115,6 @@ void	clear_actual_command(t_token **head);
 
 //Parsing
 int	find_pipe(t_tree **tree, t_token **cmd);
-int	ft_tokennb(t_token *cmd);
-
+// int	ft_tokennb(t_token *cmd);
+char	*ft_stthreejoin(char const *s1, char const *s2, char const *s3);
 #endif

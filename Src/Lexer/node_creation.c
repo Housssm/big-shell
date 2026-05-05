@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:49 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/05 16:21:11 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/05 17:09:08 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,11 @@ void	what_is_it(t_token *cmd, char *str)
 	else if (str[0] == '>' && str[1] == '>')
 		define_cmd(cmd, APPOUTREDIR);
 	else if (str[0] == 34)
-		define_cmd(cmd, WORD);
+		define_cmd(cmd, DOUBLE);
 	else if (str[0] == 39)
-		define_cmd(cmd, WORD);
+		define_cmd(cmd, SIMPLE);
+	else if (str[0] == 32 || str[0] == 11)
+		define_cmd(cmd, ESPACE);
 	else
 		define_cmd(cmd, WORD);
 }
@@ -59,8 +61,8 @@ t_token	*create_token_from_line(char *line, int beg, int end)
 	if (!value)
 		return (NULL);
 	ft_strlcpy(value, &line[beg], end - beg + 2);
-	if (!is_blank(value))
-		return (free(value), NULL);
+	// if (!is_blank(value))
+	// 	return (free(value), NULL);
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return (free(value), ft_putstr_fd("Unclosed quote\n", 2), NULL);
