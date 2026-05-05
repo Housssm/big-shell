@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/05 16:20:02 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/05 16:59:50 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ int	parse_line(t_token **cmd, char *line)
 	in_quote = 0;
 	while (line[i])
 	{
-		while (line[i] == ' ' || line[i] == '\t')
-			i++;
+		// while (line[i] == ' ' || line[i] == '\t')
+		// 	i++;
 		if (!line[i])
 			break ;
 		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
