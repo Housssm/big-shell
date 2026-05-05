@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:49 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/05 17:09:08 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/05 19:44:20 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,20 @@ t_token	*create_token_from_line(char *line, int beg, int end)
 	if (!value)
 		return (NULL);
 	ft_strlcpy(value, &line[beg], end - beg + 2);
-	// if (!is_blank(value))
-	// 	return (free(value), NULL);
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return (free(value), ft_putstr_fd("Unclosed quote\n", 2), NULL);
 	token->value = ft_strdup(value);
 	if (!token->value)
-		return (free(value), free(token), NULL);
+		return (free(token), NULL);
 	what_is_it(token, token->value);
+	if (token->type == SIMPLE || token->type == DOUBLE)
+	{
+		free(token->value);
+		token->value = ft_strtrim(value, "\'\"");
+		if (!token->value)
+			return (free(value), free(token), NULL);
+	}
 	token->next = NULL;
 	free(value);
 	return (token);
