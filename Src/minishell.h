@@ -34,9 +34,8 @@ typedef enum e_type
 	OUTREDIR,
 	HEREDOC,
 	APPOUTREDIR,
-	MAIN,
-	PROCESS,
-	CHI
+	DOUBLE,
+	SIMPLE,
 }	t_type;
 
 typedef struct s_token
@@ -56,6 +55,7 @@ typedef enum e_parser_type
 	WORD_PARS,
 	WORD_QUOTE_PARS,
 	NO_PIPE_PARS,
+	FIND,
 
 }	t_pars_type;
 
@@ -92,7 +92,7 @@ char	*get_line(void);
 void	handler(int sigtype);
 int		new_token(char c, int *flag);
 int		handle_quote(t_token **cmd, char *line, int *i, int *in_quote);
-void	add_word_token(t_token **cmd, char *line, int start, int end);
+// void	add_word_token(t_token **cmd, char *line, int start, int end);
 int		process_token(t_token **cmd, char *line, int *i, int *in_quote);
 int		parse_line(t_token **cmd, char *line);
 t_token	*ft_add_last(t_token *head);
@@ -102,6 +102,8 @@ t_token	*create_token_from_line(char *line, int beg, int end);
 int		add_node(t_token **head, char *line, int beg, int end);
 int		is_blank(char *str);
 int		is_blank(char *str);
+int	is_space(char c);
+
 // void	lexer(t_tree *tree, char *line);
 
 /*************************** TEMPORAIRE ************************/
@@ -111,6 +113,6 @@ void	clear_actual_command(t_token **head);
 
 //Parsing
 int	find_pipe(t_tree **tree, t_token **cmd);
-
+int	ft_tokennb(t_token *cmd);
 
 #endif

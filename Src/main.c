@@ -170,7 +170,7 @@ int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 
 	i = 0;
 	current = *cmd;
-	while (i < count)
+	while (i < count && current)
 	{
 		branch->av[i] = ft_strdup(current->value);
 		if (!branch->av[i])
@@ -208,15 +208,15 @@ bool	search_pipe(t_token **cmd, size_t *count)
 	
 	*count = 0;
 	current = *cmd;
-	while (current->next)
+	while (current)
 	{
 		if (current->type == PIPE)
 			return (true);
 		current = current->next;
-		*count += 1;
+		(*count)++;
 	}
-	if (current->type == PIPE)
-		return (ft_putstr_fd("Invalid command\n",1), false);
+	// if (current->type == PIPE)
+	// 	return (ft_putstr_fd("Invalid command\n",1), false);
 	return (false);
 }
 
@@ -251,8 +251,8 @@ t_tree	*no_pipe_tree(t_tree *tree , t_token **cmd, size_t *count)
 	branch_pipe = malloc(sizeof(t_tree));
 	if (!branch_pipe)
 		return (ft_putstr_fd("Error malloc\n", 2), NULL);
-	branch_pipe->parse_type = NO_PIPE_PARS;
 	branch_pipe->ac = *count;
+	branch_pipe->parse_type = NO_PIPE_PARS;
 	branch_pipe->av = malloc(sizeof(char *) * (*count + 1));
 	if (!branch_pipe->av)
 		return (free(branch_pipe), free_tree(tree), NULL);
@@ -299,6 +299,8 @@ int	parser(t_tree **tree, t_token **cmd)
 	if (!(*tree)->left)
 		return (free_tree(*tree), 1);
 	new_head = new_head_actualisation(cmd, count);
+	if (!(*tree)->right && new_head && search_pipe(&new_head, &count) == false)
+		// (*tree)->right = no_pipe_tree(*tree, cmd, &count, FIND);
 	if (new_head && !(*tree)->right)
 	{
 		if (parser(&(*tree)->right, &new_head))
@@ -306,8 +308,6 @@ int	parser(t_tree **tree, t_token **cmd)
 	}
 	return (0);
 }
-
-
 
 int	lexer(t_tree **tree, char *line)
 {
@@ -320,7 +320,7 @@ int	lexer(t_tree **tree, char *line)
 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
 	if (return_pars_line != 0)
 		return (clear_actual_command(&cmd), 1);
-	// boucle_str(&cmd);
+	boucle_str(&cmd);
 	if (parser(tree, &cmd))
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
