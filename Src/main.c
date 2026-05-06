@@ -310,30 +310,42 @@ t_token	*new_head_actualisation(t_token **head, size_t count)
 	return (new_head->next);
 }
 
-int	parser(t_tree **tree, t_token **cmd)
-{
-	size_t	count;
-	t_token	*new_head;
 
-	count = 0;
-	if (!*tree)
-		*tree = new_pipe(*tree, cmd, &count);
-	if (!*tree)
+int	join_two_token(t_token *t1, t_token *t2, t_token *t3)
+{
+	t_token *to_delete;
+	char	*new_value;
+
+	new_value = ft_strjoin(t1->value, t2->value);
+	if (!new_value)
+		return (1);
+	free(t1->value);
+	t1->value = ft_strdup(new_value);
+	free(t2->value);
+	to_delete = t2;
+	t1->next = t3;
+	free(to_delete);
+	free(new_value);
+	return (0);
+}
+
+int	check_post_redir(t_token *head)
+{
+	t_token	*current;
+
+	current = head;
+	while (current)
 	{
-		*tree = no_pipe_tree(*tree, cmd, &count);
-		if (!*tree)
-			return (free_tree(*tree), 1);
-		return(0);
-	}
-	if (!(*tree)->left)
-		(*tree)->left= left_branch(*tree, cmd, count);
-	if (!(*tree)->left)
-		return (free_tree(*tree), 1);
-	new_head = new_head_actualisation(cmd, count);
-	if (new_head && !(*tree)->right)
-	{
-		if (parser(&(*tree)->right, &new_head))
-			return (free_tree(*tree), 1);
+		if (current->type == OUTREDIR || current->type == INREDIR || current->type == HEREDOC || current->type == APPOUTREDIR)
+		{
+			current = current->next;
+			while (current->type == ESPACE)
+				current = current->next;
+			printf ("valeur du noeud apres espace[%d, %s]\n\n\n", current->type, current->value);
+			if (current->type != WORD)
+				return (printf("syntax error near unexpected token '%s'\n", current->value), 1);
+		}
+		current = current->next;
 	}
 	return (0);
 }
@@ -342,34 +354,62 @@ int	parser(t_tree **tree, t_token **cmd)
 int	join_word_to_dbl_quote(t_token **head)
 {
 	t_token *current;
-	t_token *to_delete;
-	char	*new_value;
 
 	current = (*head);
 	while (current)
 	{
-		if (current->type == WORD && current->next->type == DOUBLE)
+		if (current->type == WORD && current->next && current->next->type == DOUBLE)
 		{
-			new_value = ft_strjoin(current->value, current->next->value);
-			if (!new_value)
+			if (join_two_token(current, current->next, current->next->next))
 				return (1);
-			free(current->value);
-			current->value = ft_strdup(new_value);
-			free(current->next->value);
-			to_delete = current->next;
-			current->next = current->next->next;
-			free(to_delete);
-			free(new_value);
+		}
+		if ((current->type == INREDIR && current->next && current->next->type == INREDIR) || (current->type == OUTREDIR && current->next && current->next->type == OUTREDIR))
+		{
+			if (join_two_token(current, current->next, current->next->next))
+				return (1);
+			current->type = current->type + 2;
+			if (check_post_redir(current))
+				return(2);
 		}
 		current = current->next;
 	}
 	return (0);
 }
 
+
+t_tree	*parser(t_token **cmd)
+{
+	size_t	count;
+	t_token	*new_head;
+	t_tree	*tree;
+	
+	count = 0;
+	tree = new_pipe(NULL, cmd, &count);
+	if (!tree)
+	{
+		tree = no_pipe_tree(NULL, cmd, &count);
+		if (!tree)
+			return (free_tree(tree), NULL);
+		return(tree);
+	}
+	tree->left= left_branch(tree, cmd, count);
+	if (!(tree)->left)
+		return (free_tree(tree), NULL);
+	new_head = new_head_actualisation(cmd, count);
+	if (new_head)
+	{
+		tree->right = parser(&new_head);
+		if (!tree->right)
+			return (free_tree(tree), NULL);
+	}
+	return (tree);
+}
+
 int	lexer(t_tree **tree, char *line)
 {
 	t_token	*cmd;
 	int		return_pars_line;
+	int		return_trim_cmd;
 
 	cmd = NULL;
 	return_pars_line = parse_line(&cmd, line);
@@ -377,9 +417,14 @@ int	lexer(t_tree **tree, char *line)
 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
 	if (return_pars_line != 0)
 		return (clear_actual_command(&cmd), 1);
-	if (join_word_to_dbl_quote(&cmd))
+	return_trim_cmd = join_word_to_dbl_quote(&cmd);
+	if (return_trim_cmd == 1)
 		return (clear_actual_command(&cmd), 1);
-	if (parser(tree, &cmd))
+	if (return_trim_cmd == 2)
+		return (clear_actual_command(&cmd), free_tree(*tree), 0);
+	boucle_str(&cmd);
+	(*tree) = parser(&cmd);
+	if (!*tree)
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
 	print_tree(*tree);
