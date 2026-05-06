@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 /*************************** TEMPORAIRE ************************/
-
+/* 
 void	boucle_str(t_token **head)
 {
 	t_token	*current;
@@ -114,11 +114,9 @@ void	print_tree(t_tree *tree)
     // Pseudo bloc d'erreur demandé
     printf("└─── error\n     ├─── code: MINICODE_NONE\n     └─── msg: [No error.]\n");
 }
+ */
 
-/*************************** TEMPORAIRE ************************/
-
-
-void	clear_actual_command(t_token **head)
+ void	clear_actual_command(t_token **head)
 {
 	t_token	*current;
 
@@ -144,7 +142,6 @@ void free_tree(t_tree *tree)
 		free(tree);
 }
 
-
 void	what_is_ptype(t_tree *tree, t_token *cmd)
 {
 	if (cmd->type == PIPE)
@@ -162,28 +159,6 @@ void	what_is_ptype(t_tree *tree, t_token *cmd)
 	else
 		tree->parse_type = WORD_PARS;
 }
-
-int	double_quote_management(t_tree *branch, t_token **cmd, t_token **current, size_t *i)
-{
-	(void)cmd;
-	(void)branch;
-	(void)i;
-
-	if ((*current)->type == WORD && (*current)->next->type == DOUBLE)
-	{
-
-		printf("valeur de current:'%s' et la valeur de i :%ld\n", (*current)->value, *i);
-		printf("valeur de current:'%s' et la valeur de i :%ld\n", (*current)->next->value, *i + 1);
-		// branch->av[*i]= ft_strjoin((*current)->value, (*current)->next->value);
-		// printf("valeur de next:'%s'\n", branch->av[*i]);
-		// (*current) = (*current)->next->next;
-		// *i = *i + 2;
-		printf("la valeur de i 2 est egale a :%ld\n", *i +2);
-
-	}
-	return (0);
-}
-
 
 int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 {
@@ -246,8 +221,6 @@ bool	search_pipe(t_token **cmd, size_t *count)
 		current = current->next;
 		(*count)++;
 	}
-	// if (current->type == PIPE)
-	// 	return (ft_putstr_fd("Invalid command\n",1), false);
 	return (false);
 }
 
@@ -336,24 +309,27 @@ int	check_post_redir(t_token *head)
 	current = head;
 	while (current)
 	{
+		if ((current->type == INREDIR && current->next && current->next->type == INREDIR) || (current->type == OUTREDIR && current->next && current->next->type == OUTREDIR))
+		{
+			if (join_two_token(current, current->next, current->next->next))
+				return (1);
+		}
 		if (current->type == OUTREDIR || current->type == INREDIR || current->type == HEREDOC || current->type == APPOUTREDIR)
 		{
 			current = current->next;
 			while (current->type == ESPACE)
 				current = current->next;
-			printf ("valeur du noeud apres espace[%d, %s]\n\n\n", current->type, current->value);
 			if (current->type != WORD)
-				return (printf("syntax error near unexpected token '%s'\n", current->value), 1);
+				return (printf("syntax error near unexpected token '%s'\n", current->value), 2);
 		}
-		current = current->next;
 	}
 	return (0);
 }
 
-
 int	join_word_to_dbl_quote(t_token **head)
 {
 	t_token *current;
+	int		result_post_redir;
 
 	current = (*head);
 	while (current)
@@ -363,14 +339,14 @@ int	join_word_to_dbl_quote(t_token **head)
 			if (join_two_token(current, current->next, current->next->next))
 				return (1);
 		}
-		if ((current->type == INREDIR && current->next && current->next->type == INREDIR) || (current->type == OUTREDIR && current->next && current->next->type == OUTREDIR))
+		if (current->type == OUTREDIR || current->type == INREDIR || current->type == HEREDOC || current->type == APPOUTREDIR)
 		{
-			if (join_two_token(current, current->next, current->next->next))
-				return (1);
-			current->type = current->type + 2;
-			if (check_post_redir(current))
-				return(2);
+			result_post_redir =check_post_redir(current);
+			if (result_post_redir)
+				return(result_post_redir);
 		}
+		if (current->next == NULL && current->type == PIPE)
+			return (printf("A pipe cannot finish a prompt\n"), 2);
 		current = current->next;
 	}
 	return (0);
@@ -422,12 +398,11 @@ int	lexer(t_tree **tree, char *line)
 		return (clear_actual_command(&cmd), 1);
 	if (return_trim_cmd == 2)
 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
-	boucle_str(&cmd);
 	(*tree) = parser(&cmd);
 	if (!*tree)
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
-	print_tree(*tree);
+	// print_tree(*tree);
 	free_tree(*tree);
 	*tree = NULL;
 	return (0);
