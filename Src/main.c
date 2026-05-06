@@ -157,32 +157,32 @@ void	what_is_ptype(t_tree *tree, t_token *cmd)
 		tree->parse_type = HEREDOC_PARS;
 	else if (cmd->type == APPOUTREDIR)
 		tree->parse_type = APPOUTREDIR_PARS;
-	else if (cmd->type == WORD && (cmd->value[0] == 34 || cmd->value[0] == 39))
-		tree->parse_type = WORD_QUOTE_PARS;
+	// else if (cmd->type == WORD && (cmd->value[0] == 34 || cmd->value[0] == 39))
+	// 	tree->parse_type = WORD_QUOTE_PARS;
 	else
 		tree->parse_type = WORD_PARS;
 }
 
-/* int	double_quote_management(t_tree *branch, t_token **cmd, t_token *current, size_t *i)
+int	double_quote_management(t_tree *branch, t_token **cmd, t_token **current, size_t *i)
 {
 	(void)cmd;
 	(void)branch;
 	(void)i;
-	if (current->type == WORD && current->next->type == ESPACE && current->next->next->type == DOUBLE)
+
+	if ((*current)->type == WORD && (*current)->next->type == DOUBLE)
 	{
-		printf("TEST\n");
-		// branch->av[*i] = ft_stthreejoin(current->value, current->next->value, current->next->next->value);
-		// if (!branch->av[*i])
-		// 	return (free_split(branch->av) , 1);
-		// current = current->next->next->next;
-		// *i = *i +3;
-	}
-	if (current->type == WORD && current->next->type == SPACE)
-	{
-		printf("TEST\n\n");
+
+		printf("valeur de current:'%s' et la valeur de i :%ld\n", (*current)->value, *i);
+		printf("valeur de current:'%s' et la valeur de i :%ld\n", (*current)->next->value, *i + 1);
+		// branch->av[*i]= ft_strjoin((*current)->value, (*current)->next->value);
+		// printf("valeur de next:'%s'\n", branch->av[*i]);
+		// (*current) = (*current)->next->next;
+		// *i = *i + 2;
+		printf("la valeur de i 2 est egale a :%ld\n", *i +2);
+
 	}
 	return (0);
-} */
+}
 
 
 int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
@@ -194,18 +194,25 @@ int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
 	current = *cmd;
 	while (i < count && current)
 	{
-	/* 	if (double_quote_management(branch, cmd, current, &i))
-			return (1) */;
-		branch->av[i] = ft_strdup(current->value);
-		if (!branch->av[i])
-			return (free_split(branch->av) , 1);
-		current = current->next;
-		i++;
+		if (current->type == WORD && current->next && current->next->type == DOUBLE && i + 1 < count)
+		{
+			char *tmp = ft_strjoin(current->value, current->next->value);
+			if (!tmp) return (free_split(branch->av), 1);
+			branch->av[i] = tmp;
+			current = current->next->next;
+			i += 2;
+		}
+		else
+		{
+			branch->av[i] = ft_strdup(current->value);
+			if (!branch->av[i]) return (free_split(branch->av), 1);
+			current = current->next;
+			i++;
+		}
 	}
 	branch->av[i] = NULL;
 	return (0);
 }
-
 
 t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count) // commence depuis la **head de tree jusquqau count et la prochaine commande apres le pipe devient la nouvelle head
 {
@@ -331,6 +338,34 @@ int	parser(t_tree **tree, t_token **cmd)
 	return (0);
 }
 
+
+int	join_word_to_dbl_quote(t_token **head)
+{
+	t_token *current;
+	t_token *to_delete;
+	char	*new_value;
+
+	current = (*head);
+	while (current)
+	{
+		if (current->type == WORD && current->next->type == DOUBLE)
+		{
+			new_value = ft_strjoin(current->value, current->next->value);
+			if (!new_value)
+				return (1);
+			free(current->value);
+			current->value = ft_strdup(new_value);
+			free(current->next->value);
+			to_delete = current->next;
+			current->next = current->next->next;
+			free(to_delete);
+			free(new_value);
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
 int	lexer(t_tree **tree, char *line)
 {
 	t_token	*cmd;
@@ -342,7 +377,8 @@ int	lexer(t_tree **tree, char *line)
 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
 	if (return_pars_line != 0)
 		return (clear_actual_command(&cmd), 1);
-	boucle_str(&cmd);
+	if (join_word_to_dbl_quote(&cmd))
+		return (clear_actual_command(&cmd), 1);
 	if (parser(tree, &cmd))
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
