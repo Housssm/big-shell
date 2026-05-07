@@ -37,7 +37,6 @@ typedef enum e_type
 	DOUBLE,
 	SIMPLE,
 	ESPACE,
-
 }	t_type;
 
 typedef struct s_token
@@ -57,8 +56,6 @@ typedef enum e_parser_type
 	WORD_PARS,
 	WORD_QUOTE_PARS,
 	NO_PIPE_PARS,
-	FIND,
-
 }	t_pars_type;
 
 typedef struct s_lst_fd
@@ -94,7 +91,6 @@ char	*get_line(void);
 void	handler(int sigtype);
 int		new_token(char c, int *flag);
 int		handle_quote(t_token **cmd, char *line, int *i, int *in_quote);
-// void	add_word_token(t_token **cmd, char *line, int start, int end);
 int		process_token(t_token **cmd, char *line, int *i, int *in_quote);
 int		parse_line(t_token **cmd, char *line);
 t_token	*ft_add_last(t_token *head);
@@ -104,17 +100,31 @@ t_token	*create_token_from_line(char *line, int beg, int end);
 int		add_node(t_token **head, char *line, int beg, int end);
 int		is_blank(char *str);
 int		is_blank(char *str);
-int	is_space(char c);
+int		is_space(char c);
+int		join_two_token(t_token *t1, t_token *t2, t_token *t3);
+int		check_post_redir(t_token *head);
+int		join_word_to_dbl_quote(t_token **head);
+void	clear_actual_command(t_token **head);
 
 // void	lexer(t_tree *tree, char *line);
 
 /*************************** TEMPORAIRE ************************/
 void	boucle_str(t_token **head);
 void	clear_actual_command(t_token **head);
+void	print_tree(t_tree *tree);
+
 /*************************** TEMPORAIRE ************************/
 
 //Parsing
-int	find_pipe(t_tree **tree, t_token **cmd);
-// int	ft_tokennb(t_token *cmd);
-char	*ft_stthreejoin(char const *s1, char const *s2, char const *s3);
+void	free_tree(t_tree *tree);
+void	what_is_ptype(t_tree *tree, t_token *cmd);
+int		value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count);
+bool	search_pipe(t_token **cmd, size_t *count);
+t_token	*new_head_actualisation(t_token **head, size_t count);
+t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count);
+t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
+t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
+t_tree	*parser(t_token **cmd);
+int		lexer(t_tree **tree, char *line);
+
 #endif
