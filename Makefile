@@ -14,7 +14,7 @@ SRCS = \
 OBJS = $(SRCS:.c=.o)
 
 NAME = minishell
-HEADER = minishell.h
+HEADER = Src/minishell.h
 
 LIBFT_DIR = ./Libft/libft
 LIBFT = ${LIBFT_DIR}/libft.a
