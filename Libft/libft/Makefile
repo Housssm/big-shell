@@ -23,28 +23,18 @@ CFLAGS = -Wall -Werror -Wextra -g3
 
 all:     ${NAME}
 
-${NAME}: ${PRINTF} ${GNL} ${OBJS}
-	ar -rcs ${NAME} ${OBJS} ${PRINTF_DIR}/*.o ${GNL_DIR}/*.o
-
-${PRINTF}:
-	make -C ${PRINTF_DIR}
-
-${GNL}:
-	make -C ${GNL_DIR}
+${NAME}: ${OBJS}
+	ar -rcs ${NAME} ${OBJS}
 
 %.o: %.c libft.h
-	${CC} ${CFLAGS} -I${PRINTF_DIR} -I${GNL_DIR} -c $< -o $@
+	${CC} ${CFLAGS} -c $< -o $@
 
 clean:
 	rm -f ${OBJS}
-	make -C ${PRINTF_DIR} clean
-	make -C ${GNL_DIR} clean
 
 fclean:    clean
 	rm -f ${NAME}
 	rm -f a.out
-	make -C ${PRINTF_DIR} fclean
-	make -C ${GNL_DIR} fclean
 
 re:    fclean all
 
