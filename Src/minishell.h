@@ -111,7 +111,10 @@ t_env   *init_env(char **envp);
 int    ft_cd(char **av, t_env **env);
 int    ft_echo(char **av);
 int    ft_export(char **av, t_env **env);
-int ft_pwd(void);
+int	   ft_pwd(void);
+int    ft_unset(char **av, t_env **env);
+int    ft_env(t_env *env);
+int    ft_exit(char **av);
 
 
 #endif

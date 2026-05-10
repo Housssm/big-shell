@@ -6,6 +6,9 @@ SRCS = \
 	Src/builtins/builtin_echo.c\
 	Src/builtins/builtin_export.c\
 	Src/builtins/builtin_pwd.c\
+	Src/builtins/builtin_unset.c \
+	Src/builtins/builtin_env.c \
+	Src/builtins/builtin_exit.c \
 	Src/main.c
 
 OBJS = $(SRCS:.c=.o)
