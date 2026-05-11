@@ -123,6 +123,7 @@ void	define_cmd(t_token *cmd, t_type opcode);
 void	what_is_it(t_token *cmd, char *str);
 t_token	*create_token_from_line(char *line, int beg, int end);
 int		add_node(t_token **head, char *line, int beg, int end);
+// int		add_node(t_token **head, char *line, int beg, int end);
 int		is_blank(char *str);
 int		is_blank(char *str);
 int		is_space(char c);
@@ -161,7 +162,7 @@ t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count);
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*parser(t_token **cmd);
-int		lexer(t_tree *tree, char *line);
+int		lexer(t_tree **tree, char *line);
 
 //Pipex
 typedef struct s_data

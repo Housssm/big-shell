@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/06 20:58:16 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 18:33:41 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,6 @@ int	handle_quote(t_token **cmd, char *line, int *i, int *in_quote)
 	return (0);
 }
 
-void	add_word_token(t_token **cmd, char *line, int start, int end)
-{
-	if (start < end)
-		add_node(cmd, line, start, end - 1);
-}
 
 int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
 {
@@ -75,7 +70,33 @@ int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
 	return (0);
 }
 
-int	parse_line(t_token **cmd, char *line)
+// int	parse_line(t_token **cmd, char *line)
+// {
+// 	size_t	i;
+// 	int		in_quote;
+// 	int		ret_process;
+
+// 	i = 0;
+// 	in_quote = 0;
+// 	while (line[i])
+// 	{
+// 		if (!line[i])
+// 			break ;
+// 		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
+// 		if (ret_process == 2)
+// 			return (2);
+// 		if (ret_process)
+// 			return (1);
+// 		if (line[i] && !in_quote && new_token(line[i], &in_quote))
+// 		{
+// 			add_node(cmd, line, i, i);
+// 			i++;
+// 		}
+// 	}
+// 	return (0);
+// }
+
+/* int	parse_line(t_token **cmd, char *line)
 {
 	size_t	i;
 	int		in_quote;
@@ -94,8 +115,67 @@ int	parse_line(t_token **cmd, char *line)
 			return (1);
 		if (line[i] && !in_quote && new_token(line[i], &in_quote))
 		{
-			add_node(cmd, line, i, i);
-			i++;
+			if ((line[i] == '>' && line[i + 1] == '>') ||
+			    (line[i] == '<' && line[i + 1] == '<'))
+			{
+				add_node(cmd, line, (int)i, (int)(i + 1));
+				i += 2;
+			}
+			else if (line[i] == '>' || line[i] == '<' || line[i] == '|')
+			{
+				add_node(cmd, line, (int)i, (int)i);
+				i++;
+			}
+			else
+				i++;
+		}
+	}
+	return (0);
+} */
+
+
+
+int	parse_line(t_token **cmd, char *line)
+{
+	size_t	i;
+	int		in_quote;
+	int		ret_process;
+
+	i = 0;
+	in_quote = 0;
+	while (line[i])
+	{
+		if (!in_quote && line[i] == '>' && line[i + 1] == '>')
+		{
+			add_node(cmd, line, (int)i, (int)(i + 1));
+			i += 2;
+			continue;
+		}
+		if (!in_quote && line[i] == '<' && line[i + 1] == '<')
+		{
+			add_node(cmd, line, (int)i, (int)(i + 1));
+			i += 2;
+			continue;
+		}		
+		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
+		if (ret_process == 2)
+			return (2);
+		if (ret_process)
+			return (1);
+		if (line[i] && !in_quote && new_token(line[i], &in_quote))
+		{
+			if (line[i] == ' ' || line[i] == '\t')
+			{
+				add_node(cmd, line, (int)i, (int)i);
+				i++;
+			}
+			else if (line[i] == '>' || line[i] == '<' || line[i] == '|')
+			{
+				add_node(cmd, line, (int)i, (int)i);
+				i++;
+			}
+			else
+				i++;
 		}
 	}
 	return (0);

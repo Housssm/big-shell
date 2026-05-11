@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/05 17:25:10 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/07 15:34:47 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 17:41:02 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,36 @@ int	join_two_token(t_token *t1, t_token *t2, t_token *t3)
 	return (0);
 }
 
+// int	check_post_redir(t_token *head)
+// {
+// 	t_token	*current;
+
+// 	current = head;
+// 	while (current)
+// 	{
+// 		if ((current->type == INREDIR && current->next
+// 				&& current->next->type == INREDIR)
+// 			|| (current->type == OUTREDIR && current->next
+// 				&& current->next->type == OUTREDIR))
+// 		{
+// 			if (join_two_token(current, current->next, current->next->next))
+// 				return (1);
+// 		}
+// 		if (current->type == OUTREDIR || current->type == INREDIR
+// 			|| current->type == HEREDOC || current->type == APPOUTREDIR)
+// 		{
+// 			current = current->next;
+// 			while (current->type == ESPACE)
+// 				current = current->next;
+// 			if (current->type != WORD)
+// 				return (printf("syntax error near unexpected token '%s'\n",
+// 						current->value), 2);
+// 		}
+// 	}
+// 	return (0);
+// }
+
+
 int	check_post_redir(t_token *head)
 {
 	t_token	*current;
@@ -51,27 +81,21 @@ int	check_post_redir(t_token *head)
 	current = head;
 	while (current)
 	{
-		if ((current->type == INREDIR && current->next
-				&& current->next->type == INREDIR)
-			|| (current->type == OUTREDIR && current->next
-				&& current->next->type == OUTREDIR))
-		{
-			if (join_two_token(current, current->next, current->next->next))
-				return (1);
-		}
 		if (current->type == OUTREDIR || current->type == INREDIR
 			|| current->type == HEREDOC || current->type == APPOUTREDIR)
 		{
-			current = current->next;
-			while (current->type == ESPACE)
-				current = current->next;
-			if (current->type != WORD)
+			t_token *next_token = current->next;
+			while (next_token && next_token->type == ESPACE)
+				next_token = next_token->next;
+			if (!next_token || next_token->type != WORD)
 				return (printf("syntax error near unexpected token '%s'\n",
-						current->value), 2);
+						next_token ? next_token->value : "newline"), 2);
 		}
+		current = current->next;
 	}
 	return (0);
 }
+
 
 int	join_word_to_dbl_quote(t_token **head)
 {

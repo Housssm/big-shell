@@ -6,13 +6,19 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 15:03:12 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 19:16:49 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// gere erreur de fin < > ou si nmauvaise synthaxe
+// tout nettre dans le stdin sauf la sortie dans le OUT
+// si cest pas nul je recule sinonn jexcetee
+//echo hello >> file1 > file2 > file3 > file4
+// la je cfais if echo ensuite redirection, boucle pour aller jusqua la derniere redir et jecris dans le fichier de fin, attention a bien ouvrir les fd des fichiers que jai parcourr
+
 #include "minishell.h"
 
-/* void	boucle_str(t_token **head)
+void	boucle_str(t_token **head)
 {
 	t_token	*current;
 
@@ -111,10 +117,10 @@ void	print_tree(t_tree *tree)
 
     // Pseudo bloc d'erreur demandé
     printf("└─── error\n     ├─── code: MINICODE_NONE\n     └─── msg: [No error.]\n");
-} */
+}
 
 
-int	lexer(t_tree *tree, char *line)
+int	lexer(t_tree **tree, char *line)
 {
 	t_token	*cmd;
 	int		return_pars_line;
@@ -123,21 +129,26 @@ int	lexer(t_tree *tree, char *line)
 	cmd = NULL;
 	return_pars_line = parse_line(&cmd, line);
 	if (return_pars_line == 2)
-		return (clear_actual_command(&cmd), free_tree(tree), 0);
+		return (clear_actual_command(&cmd), free_tree(*tree), 0);
 	if (return_pars_line != 0)
 		return (clear_actual_command(&cmd), 1);
 	return_trim_cmd = join_word_to_dbl_quote(&cmd);
 	if (return_trim_cmd == 1)
 		return (clear_actual_command(&cmd), 1);
 	if (return_trim_cmd == 2)
-		return (clear_actual_command(&cmd), free_tree(tree), 0);
-	(tree) = parser(&cmd);
-	if (!tree)
+		return (clear_actual_command(&cmd), free_tree(*tree), 0);
+	(*tree) = parser(&cmd);
+	if (!*tree)
 		return (clear_actual_command(&cmd), 2);
+    boucle_str(&cmd);
 	clear_actual_command(&cmd);
-			// print_tree(sh->ast, 0);
-	free_tree(tree);
-	tree = NULL;
+	print_tree(*tree);
+
+
+//  rentrer fonctions ici
+    
+	free_tree(*tree);
+	*tree = NULL;
 	return (0);
 }
 
@@ -165,7 +176,7 @@ int	main(int ac, char **av, char **env)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		if (lexer(tree, line))
+		if (lexer(&tree, line))
 		{
 			free(line);
 			free_tree(tree);

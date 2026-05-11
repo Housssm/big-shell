@@ -5,14 +5,15 @@ SRCS = \
   	Src/Lexer/tokenisation_changement.c\
 	Src/Parser/branch_management.c\
 	Src/Parser/parser_utils.c\
-    Src/main.c
-# 	Src/builtins/builtin_cd.c\
-# 	Src/builtins/builtin_echo.c\
-# 	Src/builtins/builtin_export.c\
-# 	Src/builtins/builtin_pwd.c\
-# 	Src/builtins/builtin_unset.c \
-# 	Src/builtins/builtin_env.c \
-# 	Src/builtins/builtin_exit.c \
+	Src/builtins/builtin_cd.c\
+	Src/builtins/builtin_echo.c\
+	Src/builtins/builtin_export.c\
+	Src/builtins/builtin_pwd.c\
+	Src/builtins/builtin_unset.c \
+	Src/builtins/builtin_env.c \
+	Src/builtins/builtin_exit.c \
+	Src/main.c
+
 OBJS = $(SRCS:.c=.o)
 
 NAME = minishell
