@@ -2,7 +2,6 @@ SRCS = \
 	Src/Lexer/readline.c\
 	Src/Lexer/line_to_token.c\
 	Src/Lexer/node_creation.c\
-
   	Src/Lexer/tokenisation_changement.c\
 	Src/Parser/branch_management.c\
 	Src/Parser/parser_utils.c\
