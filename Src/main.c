@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 11:58:12 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 15:03:12 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,35 @@ void	print_tree(t_tree *tree)
     printf("└─── error\n     ├─── code: MINICODE_NONE\n     └─── msg: [No error.]\n");
 } */
 
+
+int	lexer(t_tree *tree, char *line)
+{
+	t_token	*cmd;
+	int		return_pars_line;
+	int		return_trim_cmd;
+
+	cmd = NULL;
+	return_pars_line = parse_line(&cmd, line);
+	if (return_pars_line == 2)
+		return (clear_actual_command(&cmd), free_tree(tree), 0);
+	if (return_pars_line != 0)
+		return (clear_actual_command(&cmd), 1);
+	return_trim_cmd = join_word_to_dbl_quote(&cmd);
+	if (return_trim_cmd == 1)
+		return (clear_actual_command(&cmd), 1);
+	if (return_trim_cmd == 2)
+		return (clear_actual_command(&cmd), free_tree(tree), 0);
+	(tree) = parser(&cmd);
+	if (!tree)
+		return (clear_actual_command(&cmd), 2);
+	clear_actual_command(&cmd);
+			// print_tree(sh->ast, 0);
+	free_tree(tree);
+	tree = NULL;
+	return (0);
+}
+
+
 int	main(int ac, char **av, char **env)
 {
 	char				*line;
@@ -136,7 +165,7 @@ int	main(int ac, char **av, char **env)
 		}
 		sigaction(SIGINT, &action, NULL);
 		signal(SIGQUIT, SIG_IGN);
-		if (lexer(&tree, line))
+		if (lexer(tree, line))
 		{
 			free(line);
 			free_tree(tree);

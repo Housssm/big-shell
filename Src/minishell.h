@@ -161,7 +161,7 @@ t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count);
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*parser(t_token **cmd);
-int		lexer(t_tree **tree, char *line);
+int		lexer(t_tree *tree, char *line);
 
 //Pipex
 typedef struct s_data

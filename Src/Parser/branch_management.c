@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 15:21:50 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 12:48:52 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 15:03:05 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,29 +105,29 @@ t_tree	*parser(t_token **cmd)
 	return (tree);
 }
 
-int	lexer(t_tree **tree, char *line)
-{
-	t_token	*cmd;
-	int		return_pars_line;
-	int		return_trim_cmd;
+// int	lexer(t_tree *tree, char *line)
+// {
+// 	t_token	*cmd;
+// 	int		return_pars_line;
+// 	int		return_trim_cmd;
 
-	cmd = NULL;
-	return_pars_line = parse_line(&cmd, line);
-	if (return_pars_line == 2)
-		return (clear_actual_command(&cmd), free_tree(*tree), 0);
-	if (return_pars_line != 0)
-		return (clear_actual_command(&cmd), 1);
-	return_trim_cmd = join_word_to_dbl_quote(&cmd);
-	if (return_trim_cmd == 1)
-		return (clear_actual_command(&cmd), 1);
-	if (return_trim_cmd == 2)
-		return (clear_actual_command(&cmd), free_tree(*tree), 0);
-	(*tree) = parser(&cmd);
-	if (!*tree)
-		return (clear_actual_command(&cmd), 2);
-	clear_actual_command(&cmd);
-			// print_tree(sh->ast, 0);
-	free_tree(*tree);
-	*tree = NULL;
-	return (0);
-}
+// 	cmd = NULL;
+// 	return_pars_line = parse_line(&cmd, line);
+// 	if (return_pars_line == 2)
+// 		return (clear_actual_command(&cmd), free_tree(tree), 0);
+// 	if (return_pars_line != 0)
+// 		return (clear_actual_command(&cmd), 1);
+// 	return_trim_cmd = join_word_to_dbl_quote(&cmd);
+// 	if (return_trim_cmd == 1)
+// 		return (clear_actual_command(&cmd), 1);
+// 	if (return_trim_cmd == 2)
+// 		return (clear_actual_command(&cmd), free_tree(tree), 0);
+// 	(tree) = parser(&cmd);
+// 	if (!tree)
+// 		return (clear_actual_command(&cmd), 2);
+// 	clear_actual_command(&cmd);
+// 			// print_tree(sh->ast, 0);
+// 	free_tree(tree);
+// 	tree = NULL;
+// 	return (0);
+// }
