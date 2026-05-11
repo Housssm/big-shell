@@ -1,8 +1,11 @@
 SRCS = \
-<<<<<<< HEAD
 	Src/Lexer/readline.c\
 	Src/Lexer/line_to_token.c\
 	Src/Lexer/node_creation.c\
+	Src/Lexer/tokenisation_changement.c\
+	Src/Parser/branch_management.c\
+	Src/Parser/parser_utils.c\
+    Src/main.c \
 	Src/builtins/builtin_cd.c\
 	Src/builtins/builtin_echo.c\
 	Src/builtins/builtin_export.c\
@@ -10,16 +13,6 @@ SRCS = \
 	Src/builtins/builtin_unset.c \
 	Src/builtins/builtin_env.c \
 	Src/builtins/builtin_exit.c \
-	Src/main.c
-=======
-    Src/Lexer/readline.c\
-    Src/Lexer/line_to_token.c\
-    Src/Lexer/node_creation.c\
-    Src/Lexer/tokenisation_changement.c\
-	Src/Parser/branch_management.c\
-	Src/Parser/parser_utils.c\
-    Src/main.c
->>>>>>> origin/main
 
 OBJS = $(SRCS:.c=.o)
 

@@ -134,7 +134,6 @@ void	print_tree(t_tree *tree);
 
 /*************************** TEMPORAIRE ************************/
 
-
 /* BUILTINS */
 int update_env(t_env **env, char *key, char *value);
 t_env   *init_env(char **envp);
