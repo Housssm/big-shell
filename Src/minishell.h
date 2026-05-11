@@ -27,6 +27,12 @@
 # include <unistd.h>
 # include <string.h>
 
+# include <unistd.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/wait.h>
+
 # include "../Libft/libft/libft.h"
 
 typedef enum e_type
@@ -156,5 +162,40 @@ t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*parser(t_token **cmd);
 int		lexer(t_tree **tree, char *line);
+
+//Pipex
+typedef struct s_data
+{
+	size_t	ac;
+	pid_t	**pip;
+	int		*pid;
+	char	**args;
+	char	**cmd;
+	char	**env;
+	char	*path;
+	int		in_fd;
+	int		out_fd;
+	int		is_heredoc;
+
+}t_data;
+
+void	free_struct(t_data *data);
+char	*ft_strjoin_three(char *s1, char *s2, char *s3);
+int		struct_attribution(int ac, char **av, char**env, t_data *data);
+int		extract_path(t_data *data, char **full_path, char *av);
+int		check_existing_path(t_data *data, char *av);
+void	free_all_struct(t_data *data);
+void	closing_pipes(t_data *data, size_t n);
+int		check_errors(int ac, char **av, char **env, t_data *data);
+int		check_path(t_data *data, char *av);
+int		check_errors(int ac, char **av, char **env, t_data *data);
+int		is_heredoc(int ac, char **av, char **env, t_data *data);
+int		cmd_excecution(t_data *data, char *av, size_t n);
+int		pi_opening(t_data *data);
+void	wait_for_pid(t_data *data);
+void	run_execution(char **av, t_data *data, int i);
+int		check_error_bonus(int ac, char **av, char **env, t_data *data);
+int		check_is_heredoc(int ac, char **av, t_data *data);
+int		check_env(char **env);
 
 #endif

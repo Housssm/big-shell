@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/07 15:34:22 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 11:58:12 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,7 @@ int	main(int ac, char **av, char **env)
 			free_tree(tree);
 			return (1);
 		}
+        
 		free(line);
 	}
 	return (0);

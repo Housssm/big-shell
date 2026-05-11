@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 15:21:50 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/07 15:33:24 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/11 12:48:52 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int	lexer(t_tree **tree, char *line)
 	if (!*tree)
 		return (clear_actual_command(&cmd), 2);
 	clear_actual_command(&cmd);
-	print_tree(*tree);
+			// print_tree(sh->ast, 0);
 	free_tree(*tree);
 	*tree = NULL;
 	return (0);
