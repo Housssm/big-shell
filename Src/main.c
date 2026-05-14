@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 19:16:49 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/14 18:16:52 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,71 +120,143 @@ void	print_tree(t_tree *tree)
 }
 
 
-int	lexer(t_tree **tree, char *line)
+// Dans Src/main.c
+
+int	lexer(t_tree **tree, char *line, t_env **env, int *last_status)
 {
-	t_token	*cmd;
-	int		return_pars_line;
-	int		return_trim_cmd;
+    t_token	*cmd;
+    int		return_pars_line;
+    int		return_trim_cmd;
 
-	cmd = NULL;
-	return_pars_line = parse_line(&cmd, line);
-	if (return_pars_line == 2)
-		return (clear_actual_command(&cmd), free_tree(*tree), 0);
-	if (return_pars_line != 0)
-		return (clear_actual_command(&cmd), 1);
-	return_trim_cmd = join_word_to_dbl_quote(&cmd);
-	if (return_trim_cmd == 1)
-		return (clear_actual_command(&cmd), 1);
-	if (return_trim_cmd == 2)
-		return (clear_actual_command(&cmd), free_tree(*tree), 0);
-	(*tree) = parser(&cmd);
-	if (!*tree)
-		return (clear_actual_command(&cmd), 2);
-    boucle_str(&cmd);
-	clear_actual_command(&cmd);
-	print_tree(*tree);
-
-
-//  rentrer fonctions ici
+    cmd = NULL;
+    return_pars_line = parse_line(&cmd, line);
+    if (return_pars_line == 2)
+        return (clear_actual_command(&cmd), 0); // Quitter proprement
+    if (return_pars_line != 0)
+        return (clear_actual_command(&cmd), 1); // Erreur de syntaxe
+    return_trim_cmd = join_word_to_dbl_quote(&cmd);
+    if (return_trim_cmd != 0)
+        return (clear_actual_command(&cmd), return_trim_cmd);
+    (*tree) = parser(&cmd);
+    clear_actual_command(&cmd); // Nettoie la liste de tokens, on a l'arbre
+    if (!*tree)
+        return (2); // Erreur du parser
     
-	free_tree(*tree);
-	*tree = NULL;
-	return (0);
+    // --- C'est ici que l'exécution est lancée ---
+    if (*tree)
+        shell_execute(*tree, env, last_status);
+    // -------------------------------------------
+
+    free_tree(*tree);
+    *tree = NULL;
+    return (0);
 }
 
-
-int	main(int ac, char **av, char **env)
+int	main(int ac, char **av, char **envp)
 {
-	char				*line;
-	struct sigaction	action;
-	t_tree				*tree;
+    char				*line;
+    struct sigaction	action;
+    t_tree				*tree;
+    t_env				*env;
+    int					last_status;
 
-	(void)ac;
-	(void)av;
-	(void)env;
-	ft_memset(&action, 0, sizeof(action));
-	tree = NULL;
-	action.sa_handler = handler;
-	while (1)
-	{
-		line = get_line();
-		if (!line)
-		{
-			printf("exit");
-			rl_clear_history();
-			exit (0);
-		}
-		sigaction(SIGINT, &action, NULL);
-		signal(SIGQUIT, SIG_IGN);
-		if (lexer(&tree, line))
-		{
-			free(line);
-			free_tree(tree);
-			return (1);
-		}
-        
-		free(line);
-	}
-	return (0);
+    (void)ac;
+    (void)av;
+    env = init_env(envp);
+    last_status = 0;
+    ft_memset(&action, 0, sizeof(action));
+    tree = NULL;
+    action.sa_handler = handler;
+    while (1)
+    {
+        line = get_line();
+        if (!line)
+        {
+            printf("exit\n");
+            rl_clear_history();
+            // free_env(&env); // Pense à créer une fonction pour ça
+            exit (last_status);
+        }
+        sigaction(SIGINT, &action, NULL);
+        signal(SIGQUIT, SIG_IGN);
+        if (lexer(&tree, line, &env, &last_status))
+        {
+            // Gérer les erreurs de lexer/parser si nécessaire
+        }
+        free(line);
+    }
+    return (last_status);
 }
+
+
+
+
+// int	lexer(t_tree **tree, char *line)
+// {
+// 	t_token	*cmd;
+// 	int		return_pars_line;
+// 	int		return_trim_cmd;
+
+// 	cmd = NULL;
+// 	return_pars_line = parse_line(&cmd, line);
+// 	if (return_pars_line == 2)
+// 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
+// 	if (return_pars_line != 0)
+// 		return (clear_actual_command(&cmd), 1);
+// 	return_trim_cmd = join_word_to_dbl_quote(&cmd);
+// 	if (return_trim_cmd == 1)
+// 		return (clear_actual_command(&cmd), 1);
+// 	if (return_trim_cmd == 2)
+// 		return (clear_actual_command(&cmd), free_tree(*tree), 0);
+// 	(*tree) = parser(&cmd);
+// 	if (!*tree)
+// 		return (clear_actual_command(&cmd), 2);
+//     boucle_str(&cmd);
+// 	clear_actual_command(&cmd);
+// 	print_tree(*tree);
+
+
+// //  rentrer fonctions ici
+    
+// 	free_tree(*tree);
+// 	*tree = NULL;
+// 	return (0);
+// }
+
+
+
+// int	main(int ac, char **av, char **env)
+// {
+// 	char				*line;
+// 	struct sigaction	action;
+// 	t_tree				*tree;
+
+// 	(void)ac;
+// 	(void)av;
+// 	(void)env;
+// 	ft_memset(&action, 0, sizeof(action));
+// 	tree = NULL;
+// 	action.sa_handler = handler;
+// 	while (1)
+// 	{
+// 		line = get_line();
+// 		if (!line)
+// 		{
+// 			printf("exit");
+// 			rl_clear_history();
+// 			exit (0);
+// 		}
+// 		sigaction(SIGINT, &action, NULL);
+// 		signal(SIGQUIT, SIG_IGN);
+// 		if (lexer(&tree, line))
+// 		{
+// 			free(line);
+// 			free_tree(tree);
+// 			return (1);
+// 		}
+        
+// 		free(line);
+// 	}
+// 	return (0);
+// }
 

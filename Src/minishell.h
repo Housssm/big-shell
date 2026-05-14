@@ -162,7 +162,10 @@ t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count);
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*parser(t_token **cmd);
-int		lexer(t_tree **tree, char *line);
+// int		lexer(t_tree **tree, char *line);
+int lexer(t_tree **tree, char *line, t_env **env, int *last_status);
+
+
 
 //Pipex
 typedef struct s_data
@@ -198,5 +201,14 @@ void	run_execution(char **av, t_data *data, int i);
 int		check_error_bonus(int ac, char **av, char **env, t_data *data);
 int		check_is_heredoc(int ac, char **av, t_data *data);
 int		check_env(char **env);
+
+//Executor
+
+int		shell_execute(t_tree *tree, t_env **env, int *last_status);
+int		is_builtin(char *cmd);
+int		run_builtin(t_tree *node, t_env **env, int *last_status);
+char	**env_to_tab(t_env *env);
+char	*get_cmd_path(char *cmd, t_env *env);
+
 
 #endif
