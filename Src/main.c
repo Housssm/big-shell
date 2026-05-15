@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/15 20:32:49 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 21:06:47 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,10 @@ void	print_tree(t_tree *tree)
 }
 
 
-// Dans Src/main.c
+//fonction poiur fermer les fds, et free la liste chainees de fd
+
+
+
 
 int	lexer(t_tree **tree, char *line, t_env **env, int *last_status)
 {

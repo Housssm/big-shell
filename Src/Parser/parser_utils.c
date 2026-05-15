@@ -6,11 +6,27 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 15:27:37 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/15 20:57:18 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 21:06:28 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	free_fd_list(t_lst_fd *fds)
+{
+	t_lst_fd	*current;
+	t_lst_fd	*next;
+
+	current = fds;
+	while (current)
+	{
+		next = current->next;
+		if (current->file)
+			free(current->file);
+		free(current);
+		current = next;
+	}
+}
 
 void	free_tree(t_tree *tree)
 {
@@ -20,9 +36,13 @@ void	free_tree(t_tree *tree)
 	free_tree(tree->right);
 	if (tree->av)
 		free_split(tree->av);
-	if (tree)
-		free(tree);
+	if (tree->fds)
+		free_fd_list(tree->fds);
+	free(tree);
 }
+
+
+
 
 void	what_is_ptype(t_tree *tree, t_token *cmd)
 {
