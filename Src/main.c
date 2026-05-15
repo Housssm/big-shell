@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/14 18:16:52 by marvin           ###   ########.fr       */
+/*   Updated: 2026/05/15 16:08:22 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,8 @@ int	lexer(t_tree **tree, char *line, t_env **env, int *last_status)
     t_token	*cmd;
     int		return_pars_line;
     int		return_trim_cmd;
-
+    (void)env;
+    (void)last_status;
     cmd = NULL;
     return_pars_line = parse_line(&cmd, line);
     if (return_pars_line == 2)
@@ -141,11 +142,11 @@ int	lexer(t_tree **tree, char *line, t_env **env, int *last_status)
     clear_actual_command(&cmd); // Nettoie la liste de tokens, on a l'arbre
     if (!*tree)
         return (2); // Erreur du parser
-    
-    // --- C'est ici que l'exécution est lancée ---
-    if (*tree)
-        shell_execute(*tree, env, last_status);
-    // -------------------------------------------
+    print_tree(*tree);
+    // // --- C'est ici que l'exécution est lancée ---
+    // if (*tree)
+    //     shell_execute(*tree, env, last_status);
+    // // -------------------------------------------
 
     free_tree(*tree);
     *tree = NULL;
@@ -187,7 +188,6 @@ int	main(int ac, char **av, char **envp)
     }
     return (last_status);
 }
-
 
 
 

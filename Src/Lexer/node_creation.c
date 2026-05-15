@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:49 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 17:42:06 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 16:08:04 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	what_is_it(t_token *cmd, char *str)
 		define_cmd(cmd, DOUBLE);
 	else if (str[0] == 39)
 		define_cmd(cmd, SIMPLE);
-	else if (str[0] == 32 || str[0] == 11)
+	else if (str[0] == 32 || str[0] == 9)
 		define_cmd(cmd, ESPACE);
 	else
 		define_cmd(cmd, WORD);

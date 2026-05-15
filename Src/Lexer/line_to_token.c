@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/25 13:35:52 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 18:33:41 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 16:06:09 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,71 +69,6 @@ int	process_token(t_token **cmd, char *line, int *i, int *in_quote)
 		add_node(cmd, line, start, *i - 1);
 	return (0);
 }
-
-// int	parse_line(t_token **cmd, char *line)
-// {
-// 	size_t	i;
-// 	int		in_quote;
-// 	int		ret_process;
-
-// 	i = 0;
-// 	in_quote = 0;
-// 	while (line[i])
-// 	{
-// 		if (!line[i])
-// 			break ;
-// 		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
-// 		if (ret_process == 2)
-// 			return (2);
-// 		if (ret_process)
-// 			return (1);
-// 		if (line[i] && !in_quote && new_token(line[i], &in_quote))
-// 		{
-// 			add_node(cmd, line, i, i);
-// 			i++;
-// 		}
-// 	}
-// 	return (0);
-// }
-
-/* int	parse_line(t_token **cmd, char *line)
-{
-	size_t	i;
-	int		in_quote;
-	int		ret_process;
-
-	i = 0;
-	in_quote = 0;
-	while (line[i])
-	{
-		if (!line[i])
-			break ;
-		ret_process = process_token(cmd, line, (int *)&i, &in_quote);
-		if (ret_process == 2)
-			return (2);
-		if (ret_process)
-			return (1);
-		if (line[i] && !in_quote && new_token(line[i], &in_quote))
-		{
-			if ((line[i] == '>' && line[i + 1] == '>') ||
-			    (line[i] == '<' && line[i + 1] == '<'))
-			{
-				add_node(cmd, line, (int)i, (int)(i + 1));
-				i += 2;
-			}
-			else if (line[i] == '>' || line[i] == '<' || line[i] == '|')
-			{
-				add_node(cmd, line, (int)i, (int)i);
-				i++;
-			}
-			else
-				i++;
-		}
-	}
-	return (0);
-} */
-
-
 
 int	parse_line(t_token **cmd, char *line)
 {
