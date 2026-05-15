@@ -50,28 +50,89 @@ int update_env(t_env **env, char *key, char *value)
     return (0);
 }
 
-t_env   *init_env(char **envp)
-{
-    t_env   *node;
-    t_env   *head;
-    char    *sep;
-    int i;
 
-    head = NULL;
-    i = 0;
-    while (envp[i])
+// t_env   *init_env(char **envp)
+// {
+//     t_env   *node;
+//     t_env   *head;
+//     char    *sep;
+//     int i;
+
+//     head = NULL;
+//     i = 0;
+//     while (envp[i])
+//     {
+//         node = malloc(sizeof(t_env));
+//         if (!node)
+//             return (NULL);
+//         sep = ft_strchr(envp[i], '=');
+//         node->key = ft_strndup(envp[i], sep - envp[i]);
+//         node->value = ft_strdup(sep + 1);
+//         node->next = head;
+//         head = node;
+//         i++;
+//     }
+//     return (head);
+// }
+void    free_env(t_env *head)
+{
+    t_env *current;
+    t_env *next;
+
+    if (!head)
+        return;
+    current = head;
+    while (current)
     {
-        node = malloc(sizeof(t_env));
-        if (!node)
-            return (NULL);
-        sep = ft_strchr(envp[i], '=');
-        node->key = ft_strndup(envp[i], sep - envp[i]);
-        node->value = ft_strdup(sep + 1);
-        node->next = head;
-        head = node;
-        i++;
+		next = current->next;
+        if (current->key)
+            free(current->key);
+        if (current->value)
+            free(current->value);
+		free(current);
+		current = next;
     }
-    return (head);
+}
+
+
+
+t_env	*init_env(char **envp)
+{
+	t_env	*head;
+	t_env	*current;
+	t_env	*new_node;
+	char	*sep;
+	int		i;
+
+	head = NULL;
+	current = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		new_node = malloc(sizeof(t_env));
+		if (!new_node)
+			return (free_env(head), NULL);
+		sep = ft_strchr(envp[i], '=');
+		new_node->key = ft_strndup(envp[i], sep - envp[i]);
+        if (!new_node->key)
+            return (free(new_node), free_env(head), NULL);
+		new_node->value = ft_strdup(sep + 1);
+        if(!new_node->value)
+            return (free(new_node->key), free(new_node), free_env(head), NULL);
+		new_node->next = NULL;
+		if (head == NULL)
+		{
+			head = new_node;
+			current = new_node;
+		}
+		else
+		{
+			current->next = new_node;
+			current = new_node;
+		}
+		i++;
+	}
+	return (head);
 }
 
 static char    *cd_case(char **av, t_env *env)

@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 23:48:12 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/15 16:08:22 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 20:32:49 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,33 +124,31 @@ void	print_tree(t_tree *tree)
 
 int	lexer(t_tree **tree, char *line, t_env **env, int *last_status)
 {
-    t_token	*cmd;
-    int		return_pars_line;
-    int		return_trim_cmd;
-    (void)env;
-    (void)last_status;
-    cmd = NULL;
-    return_pars_line = parse_line(&cmd, line);
-    if (return_pars_line == 2)
-        return (clear_actual_command(&cmd), 0); // Quitter proprement
-    if (return_pars_line != 0)
-        return (clear_actual_command(&cmd), 1); // Erreur de syntaxe
-    return_trim_cmd = join_word_to_dbl_quote(&cmd);
-    if (return_trim_cmd != 0)
-        return (clear_actual_command(&cmd), return_trim_cmd);
-    (*tree) = parser(&cmd);
-    clear_actual_command(&cmd); // Nettoie la liste de tokens, on a l'arbre
-    if (!*tree)
-        return (2); // Erreur du parser
+	t_token	*cmd;
+	int		return_pars_line;
+	int		return_trim_cmd;
+(void)env;
+(void)last_status;
+	cmd = NULL;
+	return_pars_line = parse_line(&cmd, line);
+	if (return_pars_line == 2)
+		return (clear_actual_command(&cmd), 0);
+	if (return_pars_line != 0)
+		return (clear_actual_command(&cmd), 1);
+	return_trim_cmd = join_word_to_dbl_quote(&cmd);
+	if (return_trim_cmd == 1)
+		return (clear_actual_command(&cmd), 1);
+	if (return_trim_cmd == 2)
+		return (clear_actual_command(&cmd), 0);
+	*tree = parser(&cmd);
+	clear_actual_command(&cmd);
+	if (!*tree)
+		return (2);
     print_tree(*tree);
-    // // --- C'est ici que l'exécution est lancée ---
-    // if (*tree)
-    //     shell_execute(*tree, env, last_status);
-    // // -------------------------------------------
-
-    free_tree(*tree);
-    *tree = NULL;
-    return (0);
+	// shell_execute(*tree, env, last_status);
+	free_tree(*tree);
+	*tree = NULL;
+	return (0);
 }
 
 int	main(int ac, char **av, char **envp)
@@ -175,7 +173,7 @@ int	main(int ac, char **av, char **envp)
         {
             printf("exit\n");
             rl_clear_history();
-            // free_env(&env); // Pense à créer une fonction pour ça
+            free_env(env);
             exit (last_status);
         }
         sigaction(SIGINT, &action, NULL);
@@ -184,10 +182,12 @@ int	main(int ac, char **av, char **envp)
         {
             // Gérer les erreurs de lexer/parser si nécessaire
         }
+        
         free(line);
     }
-    return (last_status);
+    return (free_env(env), last_status);
 }
+
 
 
 

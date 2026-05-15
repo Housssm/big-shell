@@ -1,37 +1,37 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   executor_utils.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/14 15:01:00 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/14 15:01:00 by hoel-har         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../minishell.h"
 
-int	is_builtin(char *cmd)
+t_env	*find_env_var(t_env *env, char *name)
 {
-    if (!cmd)
-        return (0);
-    if (ft_strcmp(cmd, "echo") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "cd") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "pwd") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "export") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "unset") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "env") == 0)
-        return (1);
-    if (ft_strcmp(cmd, "exit") == 0)
-        return (1);
-    return (0);
+	while (env)
+	{
+		if (ft_strcmp(env->key, name) == 0)
+			return (env);
+		env = env->next;
+	}
+	return (NULL);
 }
+
+
+// int	is_builtin(char *cmd)
+// {
+//     if (!cmd)
+//         return (0);
+//     if (ft_strcmp(cmd, "echo") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "cd") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "pwd") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "export") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "unset") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "env") == 0)
+//         return (1);
+//     if (ft_strcmp(cmd, "exit") == 0)
+//         return (1);
+//     return (0);
+// }
 
 int	run_builtin(t_tree *node, t_env **env, int *last_status)
 {
@@ -48,7 +48,7 @@ int	run_builtin(t_tree *node, t_env **env, int *last_status)
     else if (ft_strcmp(node->av[0], "env") == 0)
         *last_status = ft_env(*env);
     else if (ft_strcmp(node->av[0], "exit") == 0)
-        *last_status = ft_exit(node->av);
+        *last_status = ft_exit(node->av, *env);
     return (*last_status);
 }
 
@@ -115,7 +115,7 @@ char	*get_cmd_path(char *cmd, t_env *env)
     path_value = NULL;
     while (env)
     {
-        if (ft_strcmp(env->key, "PATH") == 0)
+        if (ft_strcmp(env->key, "PATH=") == 0)
             path_value = env->value;
         env = env->next;
     }

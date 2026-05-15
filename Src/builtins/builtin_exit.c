@@ -55,7 +55,7 @@ static int    is_numeric(char *str)
     return (1);
 }
 
-int    ft_exit(char **av)
+int    ft_exit(char **av, t_env *env)
 {
     ft_printf("exit\n");
     if (!av[1])
@@ -70,5 +70,6 @@ int    ft_exit(char **av)
         ft_printf("exit: too many arguments\n");
         return (1);
     }
+    free_env(env);
     exit(ft_atoi_exit(av[1]) % 256); // code de retour 0 - 256 
 }

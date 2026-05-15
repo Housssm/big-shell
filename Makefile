@@ -12,8 +12,9 @@ SRCS = \
 	Src/builtins/builtin_unset.c \
 	Src/builtins/builtin_env.c \
 	Src/builtins/builtin_exit.c \
-	Src/Excecution/executor.c \
-	Src/Excecution/executor_utils.c \
+	Src/builtins/exec.c \
+	Src/Excecution/executor.c\
+	Src/Excecution/executor_utils.c\
 	Src/main.c
 
 OBJS = $(SRCS:.c=.o)

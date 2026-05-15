@@ -67,10 +67,20 @@ typedef enum e_parser_type
 	NO_PIPE_PARS,
 }	t_pars_type;
 
+// typedef struct s_lst_fd
+// {
+// 	char			*file;
+// 	int				fd;
+// 	struct s_lst_fd	*previous;
+// 	struct s_lst_fd	*next;
+// }	t_lst_fd;
+
 typedef struct s_lst_fd
 {
 	char			*file;
 	int				fd;
+	int				type;        // INREDIR_PARS, OUTREDIR_PARS, etc.
+	// int				target_fd;   // STDIN_FILENO ou STDOUT_FILENO
 	struct s_lst_fd	*previous;
 	struct s_lst_fd	*next;
 }	t_lst_fd;
@@ -98,19 +108,8 @@ typedef struct s_env
     char    *value;   /* /usr/bin:/bin */
     struct s_env *next;
 }   t_env;
-/* //02/05/2026
-typedef struct s_tree
-{
-	t_typepars    type;
-	int            ac;
-	char        **av;
-	int            *fd;
-	tree         left;
-	tree         right;
-}
-extern volatile sig_atomic_t	g_signal_received;
-// var dt valeur pt etre mod en dehors progr -> assure portabilite general
-*/  //02/05/2026
+
+
 // Lexer
 char	*get_line(void);
 void	handler(int sigtype);
@@ -150,7 +149,7 @@ int    ft_export(char **av, t_env **env);
 int	   ft_pwd(void);
 int    ft_unset(char **av, t_env **env);
 int    ft_env(t_env *env);
-int    ft_exit(char **av);
+int    ft_exit(char **av, t_env *env);
 
 //Parsing
 void	free_tree(t_tree *tree);
@@ -161,6 +160,7 @@ t_token	*new_head_actualisation(t_token **head, size_t count);
 t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count);
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count);
 t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count);
+// t_tree	*parser(t_token **cmd);
 t_tree	*parser(t_token **cmd);
 // int		lexer(t_tree **tree, char *line);
 int lexer(t_tree **tree, char *line, t_env **env, int *last_status);
@@ -203,12 +203,31 @@ int		check_is_heredoc(int ac, char **av, t_data *data);
 int		check_env(char **env);
 
 //Executor
+int	open_heredoc(char *delimiter);
+int	open_input_file(char *file);
+int	open_output_file(char *file);
+int	open_append_file(char *file);
+int	dup_redir_fd(int fd, int std_fd);
+int	apply_redirections(t_lst_fd *fds);
+int	run_builtin(t_tree *node, t_env **env, int *last_status);
+void	exec_child(t_tree *node, t_env **env, char *path);
+int	execute_command(t_tree *node, t_env **env, int *last_status);
+void	pipe_child_left(t_tree *node, int pipe_fd[2],t_env **env, int *status);
+void	pipe_child_right(t_tree *node, int pipe_fd[2],t_env **env, int *status);
+int	exec_pipe(t_tree *node, t_env **env, int *last_status);
+int	shell_execute(t_tree *tree, t_env **env, int *last_status);
+t_env	*find_env_var(t_env *env, char *name);
+void    free_env(t_env *head);
 
-int		shell_execute(t_tree *tree, t_env **env, int *last_status);
+
+
+
+// int		shell_execute(t_tree *tree, t_env **env, int *last_status);
 int		is_builtin(char *cmd);
-int		run_builtin(t_tree *node, t_env **env, int *last_status);
+// int		run_builtin(t_tree *node, t_env **env, int *last_status);
 char	**env_to_tab(t_env *env);
 char	*get_cmd_path(char *cmd, t_env *env);
+
 
 
 #endif

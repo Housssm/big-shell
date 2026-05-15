@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 15:21:50 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/11 15:03:05 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 20:46:17 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@ t_tree	*left_branch(t_tree *tree, t_token **cmd, size_t count)
 		return (free_split(left->av), free(left), free_tree(tree), NULL);
 	return (left);
 }
+
+je souhaire faire une fonction qui va
+faire une boucle qui va incrementer dans les arguments et ne va pas compter la redirection et le fichier qui le suit ca va nous donner lalocation total
+maintenant faire une boucle qui incremebt et va ouvrir les fd en se baladant  
 
 t_tree	*new_pipe(t_tree *tree, t_token **cmd, size_t *count)
 {
@@ -77,7 +81,13 @@ t_tree	*no_pipe_tree(t_tree *tree, t_token **cmd, size_t *count)
 	return (branch_pipe);
 }
 
-t_tree	*parser(t_token **cmd)
+
+
+
+
+#include "../minishell.h"
+
+static t_tree	*build_ast(t_token **cmd)
 {
 	size_t	count;
 	t_token	*new_head;
@@ -88,22 +98,66 @@ t_tree	*parser(t_token **cmd)
 	if (!tree)
 	{
 		tree = no_pipe_tree(NULL, cmd, &count);
-		if (!tree)
-			return (free_tree(tree), NULL);
 		return (tree);
 	}
 	tree->left = left_branch(tree, cmd, count);
-	if (!(tree)->left)
+	if (!tree->left)
 		return (free_tree(tree), NULL);
 	new_head = new_head_actualisation(cmd, count);
 	if (new_head)
 	{
-		tree->right = parser(&new_head);
+		tree->right = build_ast(&new_head);
 		if (!tree->right)
 			return (free_tree(tree), NULL);
 	}
 	return (tree);
 }
+
+t_tree	*parser(t_token **cmd)
+{
+	return (build_ast(cmd));
+}
+
+int	parser_and_execute(t_token **cmd, t_env **env, int *last_status)
+{
+	t_tree	*tree;
+
+	tree = build_ast(cmd);
+	if (!tree)
+		return (1);
+	shell_execute(tree, env, last_status);
+	free_tree(tree);
+	return (0);
+}
+
+
+// t_tree	*parser(t_token **cmd)
+// {
+// 	size_t	count;
+// 	t_token	*new_head;
+// 	t_tree	*tree;
+
+// 	count = 0;
+// 	tree = new_pipe(NULL, cmd, &count);
+// 	if (!tree)
+// 	{
+// 		tree = no_pipe_tree(NULL, cmd, &count);
+// 		if (!tree)
+// 			return (free_tree(tree), NULL);
+// 		return (tree);
+// 	}
+// 	tree->left = left_branch(tree, cmd, count);
+// 	if (!(tree)->left)
+// 		return (free_tree(tree), NULL);
+// 	new_head = new_head_actualisation(cmd, count);
+// 	if (new_head)
+// 	{
+// 		tree->right = parser(&new_head);
+// 		if (!tree->right)
+// 			return (free_tree(tree), NULL);
+// 	}
+// 	return (tree);
+// }
 
 // int	lexer(t_tree *tree, char *line)
 // {
