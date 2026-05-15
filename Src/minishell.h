@@ -80,7 +80,7 @@ typedef struct s_lst_fd
 	char			*file;
 	int				fd;
 	int				type;        // INREDIR_PARS, OUTREDIR_PARS, etc.
-	// int				target_fd;   // STDIN_FILENO ou STDOUT_FILENO
+	int				target_fd;   // STDIN_FILENO ou STDOUT_FILENO
 	struct s_lst_fd	*previous;
 	struct s_lst_fd	*next;
 }	t_lst_fd;

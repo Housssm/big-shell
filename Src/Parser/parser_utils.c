@@ -6,7 +6,7 @@
 /*   By: hoel-har <hoel-har@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 15:27:37 by hoel-har          #+#    #+#             */
-/*   Updated: 2026/05/07 15:28:40 by hoel-har         ###   ########.fr       */
+/*   Updated: 2026/05/15 20:57:18 by hoel-har         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,24 +40,24 @@ void	what_is_ptype(t_tree *tree, t_token *cmd)
 		tree->parse_type = WORD_PARS;
 }
 
-int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
-{
-	size_t	i;
-	t_token	*current;
+// int	value_from_list_to_tree(t_tree *branch, t_token **cmd, size_t count)
+// {
+// 	size_t	i;
+// 	t_token	*current;
 
-	i = 0;
-	current = *cmd;
-	while (i < count && current)
-	{
-		branch->av[i] = ft_strdup(current->value);
-		if (!branch->av[i])
-			return (free_split(branch->av), 1);
-		current = current->next;
-		i++;
-	}
-	branch->av[i] = NULL;
-	return (0);
-}
+// 	i = 0;
+// 	current = *cmd;
+// 	while (i < count && current)
+// 	{
+// 		branch->av[i] = ft_strdup(current->value);
+// 		if (!branch->av[i])
+// 			return (free_split(branch->av), 1);
+// 		current = current->next;
+// 		i++;
+// 	}
+// 	branch->av[i] = NULL;
+// 	return (0);
+// }
 
 bool	search_pipe(t_token **cmd, size_t *count)
 {
